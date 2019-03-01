@@ -1,0 +1,30 @@
+{
+  "name": "fontawesome-subset",
+  "version": "0.1.0",
+  "description": "Utility to create subsets for FontAwesome and FontAwesome Pro.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Logan Graham",
+    "email": "loganparkergraham@gmail.com",
+    "url": "https://github.com/omacranger"
+  },
+  "dependencies": {
+    "svg2ttf": "^4.2.0",
+    "ttf2eot": "^2.0.0",
+    "ttf2woff": "^2.0.1",
+    "ttf2woff2": "^2.0.3",
+    "@fortawesome/fontawesome-free": "^5.7.2",
+    "mkdirp": "^0.5.1"
+  },
+  "optionalDependencies": {
+    "@fortawesome/fontawesome-pro": "^5.7.2"
+  },
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type" : "git",
+    "url" : "git+https://github.com/omacranger/fontawesome-subset.git"
+  }
+}
