@@ -28,9 +28,11 @@ function fontawesomeSubset(subset, output_dir, options){
         brands: 'fa-brands-400'
     };
 
-    let opts = {...options, ...{
+    let opts = {
+        ...{
             package: 'free',
-        }};
+        }, ...options
+    };
 
     // If 'subset' is set to array, turn into object defaulted for 'solid' use (fontawesome free)
     if (Array.isArray(subset)) {
@@ -52,8 +54,20 @@ function fontawesomeSubset(subset, output_dir, options){
         }
 
         let svg_file = fs.readFileSync(svg_file_path).toString(),
-            font_weight_regex = new RegExp(`(<glyph glyph-name="(?:(?!${value.join('|')}).*?)".*?\\/>)`, 'gms'),
-            svg_contents_new = svg_file.replace(font_weight_regex, '').replace(/>\s+</gms, '><'),
+            glyphs_to_remove = ((svg_file) => {
+                let glyphs = [],
+                    matcher = new RegExp('<glyph glyph-name="([^"]+)"', 'gms'),
+                    current_match;
+
+                while (current_match = matcher.exec(svg_file)) {
+                    if (value.indexOf(current_match[1]) === -1) {
+                        glyphs.push(current_match[1]);
+                    }
+                }
+
+                return glyphs;
+            })(svg_file),
+            svg_contents_new = svg_file.replace(new RegExp(`(<glyph glyph-name="(${glyphs_to_remove.join('|')})".*?\\/>)`, 'gms'), '').replace(/>\s+</gms, '><'),
             ttf_utils = svg2ttf(svg_contents_new, {}),
             ttf = Buffer.from(ttf_utils.buffer);
 
