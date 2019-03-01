@@ -43,6 +43,23 @@ fontawesomeSubset({
 
 You can use any of the weights provided by FontAwesome Pro including `solid`, `regular`, `light`, or `brands`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
 
+The above example would output a directory with the following structure:
+```
+/sass/
+    /webfonts/
+        fa-regular-400.eot
+        fa-regular-400.svg
+        fa-regular-400.ttf
+        fa-regular-400.woff
+        fa-regular-400.woff2
+        fa-solid-900.eot
+        fa-solid-900.svg
+        fa-solid-900.ttf
+        fa-solid-900.woff
+        fa-solid-900.woff2
+```
+
+It is still up to you to determine which glyphs you need and to pass them to the function to generate the webfonts. I recommend optimizing your CSS files as well to get the most from the tool.
 
 ### Using with SCSS / SASS
 
