@@ -26,5 +26,14 @@
   "repository": {
     "type" : "git",
     "url" : "git+https://github.com/omacranger/fontawesome-subset.git"
-  }
+  },
+  "keywords": [
+    "font",
+    "awesome",
+    "fontawesome",
+    "fontawesome pro",
+    "subset",
+    "icon font",
+    "optimize"
+  ]
 }
