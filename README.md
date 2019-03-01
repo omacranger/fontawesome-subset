@@ -1,7 +1,6 @@
-#FontAwesome Subset
+# FontAwesome Subset
 
-Love FontAwesome but don't need 1800 icons bundled on every page of the site? Me either. `fontawesome-subset` is a utility for creating subsets of FontAwesome for optimized use on the web. It works by taking glyph names that you've used (`angle-left`,`caret-up`, etc) and creating an optimized font with only the glyphs you need. Yes, SVG icons and fragments are fancier and more feature filled - but if you already have a website built using the webfont - why switch -- right?  
-
+Love FontAwesome but don't need 1800 icons bundled on every page of the site? Me either. `fontawesome-subset` is a utility for creating subsets of FontAwesome for optimized use on the web. It works by taking glyph names that you've used (`angle-left`, `caret-up`, etc) and creating an optimized font with only the glyphs you need. Yes, SVG icons and fragments are fancier and more feature filled - but if you already have a website built using the webfont - why switch -- right?
 
 ## Usage
 Install: 
@@ -30,7 +29,7 @@ FontAwesome (FA) Pro provides numerous additional icons, as well as different fo
 
 After installation, you can supply additional information to the `subset` parameter of `fontawesomeSubset` to create families for specific font styles. Make sure to include `package: 'pro'` inside the options parameter to generate from the Pro source instead and enable font creation for different weights / styles. 
 
-####Example generating separate glyphs for 'regular' and 'solid' styles:
+#### Example generating separate glyphs for 'regular' and 'solid' styles:
 ```javascript
 fontawesomeSubset({
     regular: ['check','square','caret-up'],
