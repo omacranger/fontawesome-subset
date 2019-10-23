@@ -82,8 +82,8 @@ function fontawesomeSubset(subset, output_dir, options){
 
         fs.writeFileSync(`${output_file}.svg`, svg_contents_new);
         fs.writeFileSync(`${output_file}.ttf`, ttf);
-        fs.writeFileSync(`${output_file}.eot`, ttf2eot(ttf));
-        fs.writeFileSync(`${output_file}.woff`, ttf2woff(ttf));
+        fs.writeFileSync(`${output_file}.eot`, new Buffer(ttf2eot(ttf_utils).buffer));
+        fs.writeFileSync(`${output_file}.woff`, new Buffer(ttf2woff(ttf_utils).buffer));
         fs.writeFileSync(`${output_file}.woff2`, ttf2woff2(ttf));
     }
 }
