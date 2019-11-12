@@ -25,10 +25,11 @@ function fontawesomeSubset(subset, output_dir, options){
         solid: 'fa-solid-900',
         light: 'fa-light-300',
         regular: 'fa-regular-400',
-        brands: 'fa-brands-400'
+        brands: 'fa-brands-400',
+        duotone: 'fa-duotone-900',
     };
 
-    let opts = {
+    const opts = {
         ...{
             package: 'free',
         }, ...options
@@ -39,7 +40,7 @@ function fontawesomeSubset(subset, output_dir, options){
         subset = {'solid': subset};
     }
 
-    for (let [font_family, value] of Object.entries(subset)) {
+    for (let [font_family, icons] of Object.entries(subset)) {
         // Skip if invalid font family
         let svg_file_path = `node_modules/@fortawesome/fontawesome-${opts.package}/webfonts/${font_map[font_family]}.svg`;
 
@@ -53,22 +54,33 @@ function fontawesomeSubset(subset, output_dir, options){
             continue;
         }
 
-        let svg_file = fs.readFileSync(svg_file_path).toString(),
+        const svg_file = fs.readFileSync(svg_file_path).toString(),
             glyphs_to_remove = ((svg_file) => {
                 let glyphs = [],
                     matcher = new RegExp('<glyph glyph-name="([^"]+)"', 'gms'),
                     current_match;
 
                 while (current_match = matcher.exec(svg_file)) {
-                    if (value.indexOf(current_match[1]) === -1) {
-                        glyphs.push(current_match[1]);
+                    if(font_family === 'duotone'){
+                        // If we're matching duotone we need to remove the trailing `-secondary` or `-primary`
+                        if (icons.indexOf(current_match[1].substring(0, current_match[1].lastIndexOf('-'))) === -1) {
+                            glyphs.push(current_match[1]);
+                        }
+                    } else {
+                        if (icons.indexOf(current_match[1]) === -1) {
+                            glyphs.push(current_match[1]);
+                        }
                     }
                 }
 
                 return glyphs;
             })(svg_file),
             svg_contents_new = svg_file.replace(new RegExp(`(<glyph glyph-name="(${glyphs_to_remove.join('|')})".*?\\/>)`, 'gms'), '').replace(/>\s+</gms, '><'),
-            ttf_utils = svg2ttf(svg_contents_new, {}),
+            ttf_utils = svg2ttf(svg_contents_new, {
+                fullname: 'FontAwesome ' + font_family,
+                familyname: 'FontAwesome',
+                subfamilyname: font_family,
+            }),
             ttf = Buffer.from(ttf_utils.buffer);
 
         mkdirp.sync(path.resolve(output_dir), (err) => {
@@ -78,12 +90,12 @@ function fontawesomeSubset(subset, output_dir, options){
             }
         });
 
-        let output_file = path.resolve(output_dir, font_map[font_family]);
+        const output_file = path.resolve(output_dir, font_map[font_family]);
 
         fs.writeFileSync(`${output_file}.svg`, svg_contents_new);
         fs.writeFileSync(`${output_file}.ttf`, ttf);
-        fs.writeFileSync(`${output_file}.eot`, ttf2eot(ttf));
-        fs.writeFileSync(`${output_file}.woff`, ttf2woff(ttf));
+        fs.writeFileSync(`${output_file}.eot`, ttf2eot(ttf).buffer);
+        fs.writeFileSync(`${output_file}.woff`, ttf2woff(ttf).buffer);
         fs.writeFileSync(`${output_file}.woff2`, ttf2woff2(ttf));
     }
 }
