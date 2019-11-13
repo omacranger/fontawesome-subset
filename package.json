@@ -1,6 +1,6 @@
 {
   "name": "fontawesome-subset",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "Utility to create subsets for FontAwesome and FontAwesome Pro.",
   "main": "index.js",
   "scripts": {
@@ -33,6 +33,7 @@
     "fontawesome",
     "fontawesome pro",
     "subset",
+    "subsetter",
     "icon font",
     "optimize"
   ]

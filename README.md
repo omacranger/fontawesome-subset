@@ -1,6 +1,6 @@
 # FontAwesome Subset
 
-Love FontAwesome but don't need 1800 icons bundled on every page of the site? Me either. `fontawesome-subset` is a utility for creating subsets of FontAwesome for optimized use on the web. It works by taking glyph names that you've used (`angle-left`, `caret-up`, etc) and creating an optimized font with only the glyphs you need. Yes, SVG icons and fragments are fancier and more feature filled - but if you already have a website built using the webfont - why switch -- right?
+Love FontAwesome but don't need thousands of icons bundled on every page of the site? Me either. `fontawesome-subset` is a utility for creating subsets of FontAwesome for optimized use on the web. It works by taking glyph names that you've used (`angle-left`, `caret-up`, etc) and creating an optimized font with only the glyphs you need. Yes, SVG icons and fragments are fancier and more feature filled - but if you already have a website built using the webfont - why switch -- right?
 
 ## Usage
 Install: 
@@ -18,7 +18,7 @@ fontawesomeSubset(['check','square','caret-up'], 'sass/webfonts');
 ### Full Options
 
 #### fontawesomeSubset(subset, output_dir, options)
-- `subset` - Array containing list of glyph names (icon names) that you want to limit the subset to. When using FontAwesome Pro (see [below](#using-with-fontawesome-pro)) you can supply an object with key->value pairs for different FA styles (solid, regular, light, brands).
+- `subset` - Array containing list of glyph names (icon names) that you want to limit the subset to. When using FontAwesome Pro (see [below](#using-with-fontawesome-pro)) you can supply an object with key->value pairs for different FA styles (solid, regular, light, brands, duotone).
 - `output_dir` - Directory that you want the webfonts to be generated in. Relative to current NPM process. Ex: `sass/webfonts`
 - `options` - Object of options to further customize the tool.
     - `package` - `free` or `pro` . Defaults to `free` version. See [below](#using-with-fontawesome-pro) for Pro instructions.
@@ -41,7 +41,7 @@ fontawesomeSubset({
 });
 ```
 
-You can use any of the weights provided by FontAwesome Pro including `solid`, `regular`, `light`, or `brands`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
+You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, or `duotone`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
 
 The above example would output a directory with the following structure:
 ```
