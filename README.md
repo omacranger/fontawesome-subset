@@ -8,10 +8,12 @@ Install:
 npm install --save-dev fontawesome-subset 
 ```
 
-Run via your favorite task manager:
+Run via your favorite task runner:
 ```javascript
+// Require fontawesome-subset
 const fontawesomeSubset = require('fontawesome-subset');
 
+// Create or append a task to be ran with your configuration
 fontawesomeSubset(['check','square','caret-up'], 'sass/webfonts');
 ```
 
