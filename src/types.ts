@@ -1,5 +1,5 @@
 export interface FontAwesomeOptions {
-    package?: "free" | "pro";
+    package: "free" | "pro";
 }
 
 export type Subset = "solid" | "light" | "regular" | "brands" | "duotone";

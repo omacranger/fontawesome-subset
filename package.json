@@ -6,7 +6,9 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "tsc"
+        "build": "tsc",
+        "build-watch": "tsc -w",
+        "prepublish": "npm run build"
     },
     "author": {
         "name": "Logan Graham",

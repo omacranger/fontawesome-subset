@@ -51,12 +51,7 @@ function findGlyphsToRemove(svgFile: string, fontFamily: Subset, icons: string[]
  * @param outputDir Directory output generated webfonts.
  * @param options Object of options / tweaks for further customization. Defaults to 'Free' package.
  */
-function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: FontAwesomeOptions = {}) {
-    const opts = {
-        package: "free",
-        ...options
-    };
-
+function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: FontAwesomeOptions = { package: "free" }) {
     // Maps style to actual font name / file name.
     const fontMap: Record<Subset, string> = {
         solid: "fa-solid-900",
@@ -86,7 +81,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         const fontFamily = key as keyof typeof fontMap;
         const svgFileName = fontMap[fontFamily];
-        const svgFilePath = `node_modules/@fortawesome/fontawesome-${opts.package}/webfonts/${svgFileName}.svg`;
+        const svgFilePath = `node_modules/@fortawesome/fontawesome-${options.package}/webfonts/${svgFileName}.svg`;
 
         if (!existsSync(svgFilePath)) {
             console.error("Unable to find SVG file. Could be missing fontawesome dependencies. Make sure you have your preferred FontAwesome package in package.json and try running `npm install` or changing the font style.");
