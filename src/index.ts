@@ -2,7 +2,7 @@
  * Author: Logan Graham <loganparkergraham@gmail.com>
  */
 
-import { readFileSync, existsSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
 import { FontAwesomeOptions, Subset, SubsetOption } from "./types";
@@ -62,6 +62,12 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
     };
     const fontTypes = Object.keys(fontMap);
 
+    // Check to see if the user has either free, or pro installed.
+    if (!(existsSync("node_modules/@fortawesome/fontawesome-free") || existsSync("node_modules/@fortawesome/fontawesome-pro"))) {
+        console.error("Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation.");
+        return;
+    }
+
     // If 'subset' is set to array, turn into object defaulted for 'solid' use (fontawesome free)
     if (Array.isArray(subset)) {
         subset = { solid: subset };
@@ -84,7 +90,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         const svgFilePath = `node_modules/@fortawesome/fontawesome-${options.package}/webfonts/${svgFileName}.svg`;
 
         if (!existsSync(svgFilePath)) {
-            console.error("Unable to find SVG file. Could be missing fontawesome dependencies. Make sure you have your preferred FontAwesome package in package.json and try running `npm install` or changing the font style.");
+            console.warn(`Unable to find SVG font file for requested font style '${fontFamily}'. Skipping.`);
             continue;
         }
 

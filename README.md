@@ -2,12 +2,18 @@
 
 Love FontAwesome but don't need thousands of icons bundled on every page of the site? Me either. `fontawesome-subset` is a utility for creating subsets of FontAwesome for optimized use on the web. It works by taking glyph names that you've used (`angle-left`, `caret-up`, etc) and creating an optimized font with only the glyphs you need. Yes, SVG icons and fragments are fancier and more feature filled - but if you already have a website built using the webfont - why switch -- right?
 
-## Usage
-Install: 
-```bash
+## Installation
+First, install fontawesome-subset:
+```sh
 npm install --save-dev fontawesome-subset 
 ```
 
+Second, install the edition of FontAwesome you plan on using. If you're using the Pro version, see [below](#using-with-fontawesome-pro). For the free version, use the following:
+```sh
+npm install --save-dev @fortawesome/fontawesome-free
+```
+
+## Usage
 Run via your favorite task runner:
 ```javascript
 // Require fontawesome-subset

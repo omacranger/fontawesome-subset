@@ -1,6 +1,6 @@
 {
     "name": "fontawesome-subset",
-    "version": "1.1.0",
+    "version": "2.0.0",
     "description": "Utility to create subsets for FontAwesome and FontAwesome Pro.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -8,7 +8,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "tsc",
         "build-watch": "tsc -w",
-        "prepublish": "npm run build"
+        "prepublishOnly": "npm run build"
     },
     "author": {
         "name": "Logan Graham",
@@ -24,10 +24,6 @@
         "ttf2eot": "^2.0.0",
         "ttf2woff": "^2.0.2",
         "ttf2woff2": "^3.0.0"
-    },
-    "optionalDependencies": {
-        "@fortawesome/fontawesome-pro": "^5.x",
-        "@fortawesome/fontawesome-free": "^5.x"
     },
     "license": "GPL-3.0-or-later",
     "repository": {
