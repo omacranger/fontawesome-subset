@@ -96,11 +96,14 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         const svgFile = readFileSync(svgFilePath).toString();
         const glyphsToRemove = findGlyphsToRemove(svgFile, fontFamily, icons);
-        const svgContentsNew = svgFile.replace(new RegExp(`(<glyph glyph-name="(${glyphsToRemove.join("|")})".*?\\/>)`, "gms"), "").replace(/>\s+</gms, "><");
+        const svgContentsNew = svgFile.replace(new RegExp("<metadata>.*</metadata>", "s"), "").replace(new RegExp("<!--.*-->", "s"), "").replace(new RegExp(`(<glyph glyph-name="(${glyphsToRemove.join("|")})".*?\\/>)`, "gms"), "").replace(/>\s+</gms, "><");
         const ttfUtils = svg2ttf(svgContentsNew, {
             fullname: "FontAwesome " + fontFamily,
             familyname: "FontAwesome",
-            subfamilyname: fontFamily
+            subfamilyname: fontFamily,
+            description: "FontAwesome " + fontFamily,
+            url: ' ',
+            ts: 0
         });
         const ttf = Buffer.from(ttfUtils.buffer);
 
