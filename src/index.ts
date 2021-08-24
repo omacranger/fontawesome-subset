@@ -106,7 +106,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
             subfamilyname: fontFamily,
             description: "FontAwesome " + fontFamily,
             copyright: "Copyright (c) Font Awesome",
-            url: ' ',
+            url: 'https://fontawesome.com',
             ts: 0
         });
         const ttf = Buffer.from(ttfUtils.buffer);
