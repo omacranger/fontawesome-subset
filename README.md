@@ -15,9 +15,9 @@ npm install --save-dev @fortawesome/fontawesome-free
 
 ## Usage
 Run via your favorite task runner:
-```javascript
-// Require fontawesome-subset
-const fontawesomeSubset = require('fontawesome-subset');
+```typescript
+// Import fontawesome-subset
+import { fontawesomeSubset } from "fontawesome-subset";
 
 // Create or append a task to be ran with your configuration
 fontawesomeSubset(['check','square','caret-up'], 'sass/webfonts');

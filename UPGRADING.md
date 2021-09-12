@@ -1,5 +1,10 @@
 # Upgrading Versions
 
+## 2.0 to 3.0
+3.0 has updated the default export to be a little more friendly for modern tooling. Anywhere you were previously using
+`const fontawesomeSubset = require('fontawesome-subset');` may need to be updated to the newer format, 
+`import { fontawesomeSubset } from "fontawesome-subset";`. 
+
 ## 1.x to 2.0
 Version 2.0 of fontawesome-subset removes the required dependency for `@fortawesome/fontawesome-free`. 
 
