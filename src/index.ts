@@ -6,11 +6,11 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
 import { FontAwesomeOptions, Subset, SubsetOption } from "./types";
-
-const svg2ttf = require("svg2ttf"),
-    ttf2eot = require("ttf2eot"),
-    ttf2woff = require("ttf2woff"),
-    ttf2woff2 = require("ttf2woff2");
+import svg2ttf from "svg2ttf";
+import ttf2woff from "ttf2woff";
+import ttf2woff2 = require("ttf2woff2");
+import ttf2eot = require("ttf2eot");
+import { FontOptions } from "svg2ttf";
 
 /**
  * Returns a list of all glyph names that don't exist in user-provided 'icons' parameter
@@ -100,8 +100,10 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         const ttfUtils = svg2ttf(svgContentsNew, {
             fullname: "FontAwesome " + fontFamily,
             familyname: "FontAwesome",
-            subfamilyname: fontFamily
-        });
+            subfamilyname: fontFamily,
+            ts: 0 // Manually specify empty timestamp for deterministic output
+            // Casting these as @types are out of date for svg2ttf
+        } as FontOptions);
         const ttf = Buffer.from(ttfUtils.buffer);
 
         makeDirSync(resolve(outputDir));
@@ -110,10 +112,11 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         writeFileSync(`${outputFile}.svg`, svgContentsNew);
         writeFileSync(`${outputFile}.ttf`, ttf);
-        writeFileSync(`${outputFile}.eot`, ttf2eot(ttf).buffer);
-        writeFileSync(`${outputFile}.woff`, ttf2woff(ttf).buffer);
+        writeFileSync(`${outputFile}.eot`, ttf2eot(ttf));
+        writeFileSync(`${outputFile}.woff`, ttf2woff(ttf));
         writeFileSync(`${outputFile}.woff2`, ttf2woff2(ttf));
     }
 }
 
-export = fontawesomeSubset;
+export { fontawesomeSubset };
+export * from "./types";
