@@ -1,9 +1,24 @@
 # Upgrading Versions
 
 ## 2.0 to 3.0
-3.0 has updated the default export to be a little more friendly for modern tooling. Anywhere you were previously using
-`const fontawesomeSubset = require('fontawesome-subset');` may need to be updated to the newer format, 
-`import { fontawesomeSubset } from "fontawesome-subset";`. 
+3.0 has updated the default export to be an object for future upgrades / maintainability. Anywhere you were previously 
+using a singular import you'll need to update to destructure or pull from the object instead. Example below: 
+
+Old:
+```javascript
+const fontawesomeSubset = require('fontawesome-subset');
+```
+
+New: 
+```javascript
+const { fontawesomeSubset } = require("fontawesome-subset");
+```
+
+New (TypeScript / Module Syntax):
+```typescript
+import { fontawesomeSubset } from "fontawesome-subset";
+```
+
 
 ## 1.x to 2.0
 Version 2.0 of fontawesome-subset removes the required dependency for `@fortawesome/fontawesome-free`. 
