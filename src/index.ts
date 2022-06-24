@@ -35,17 +35,18 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
     };
     const fontTypes = Object.keys(fontMap);
 
-    let fontMeta = "";
-    let fontFiles = "";
-
     // Check to see if the user has either free, or pro installed.
-    if (existsSync(`node_modules/@fortawesome/fontawesome-${options.package}`)) {
-        fontMeta = `node_modules/@fortawesome/fontawesome-${options.package}/metadata/icons.yml`;
-        fontFiles = `node_modules/@fortawesome/fontawesome-${options.package}/webfonts`;
-    } else {
-        console.error("Unable to find either the FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation.");
+    try {
+        require.resolve(`@fortawesome/fontawesome-${options.package}`);
+    } catch(e) {
+        console.error(`Package @fortawesome/fontawesome-${options.package} not found, run 'npm i @fortawesome/fontawesome-${options.package}' to install.`);
         return;
     }
+
+    const faFile = require.resolve(`@fortawesome/fontawesome-${options.package}`);
+    const fontMeta = resolve(faFile, '../../metadata/icons.yml');
+    const fontFiles = resolve(faFile, '../../webfonts');
+
 
     // If 'subset' is set to array, turn into object defaulted for 'solid' use (fontawesome free)
     if (Array.isArray(subset)) {
