@@ -19,12 +19,15 @@
         "dist"
     ],
     "dependencies": {
+        "glob": "^8.0.3",
         "lodash": ">=4.17.21",
         "mkdirp": "^1.0.4",
+        "subset-font": "^1.4.0",
         "svg2ttf": "^6.0.3",
         "ttf2eot": "^3.0.0",
         "ttf2woff": "^3.0.0",
-        "ttf2woff2": "^4.0.4"
+        "ttf2woff2": "^4.0.4",
+        "yaml": "^2.1.1"
     },
     "license": "GPL-3.0-or-later",
     "repository": {
@@ -42,6 +45,7 @@
         "optimize"
     ],
     "devDependencies": {
+        "@fortawesome/fontawesome-free": "^6.1.1",
         "@types/mkdirp": "^1.0.2",
         "@types/node": "^16.9.1",
         "@types/svg2ttf": "^5.0.1",
