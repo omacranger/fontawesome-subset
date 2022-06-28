@@ -5,43 +5,15 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
-import { FontAwesomeOptions, Subset, SubsetOption } from "./types";
-import svg2ttf from "svg2ttf";
-import ttf2woff from "ttf2woff";
-import ttf2woff2 = require("ttf2woff2");
-import ttf2eot = require("ttf2eot");
-import { FontOptions } from "svg2ttf";
+import { FontAwesomeOptions, GlyphName, Subset, SubsetOption } from "./types";
+import type { TargetFormat } from "subset-font";
+import subsetFont from "subset-font";
+import yaml from "yaml";
 
-/**
- * Returns a list of all glyph names that don't exist in user-provided 'icons' parameter
- *
- * @param svgFile The contents of the SVG file we're looking at.
- * @param fontFamily The current font family we're parsing.
- * @param icons Array of glyph names we want to keep / output.
- *
- * @return string[] List of glyph names to remove from the output.
- */
-function findGlyphsToRemove(svgFile: string, fontFamily: Subset, icons: string[]): string[] {
-    let glyphs = [],
-        matcher = new RegExp('<glyph glyph-name="([^"]+)"', "gms");
-
-    let current_match;
-
-    while ((current_match = matcher.exec(svgFile))) {
-        if (fontFamily === "duotone") {
-            // If we're matching duotone we need to remove the trailing `-secondary` or `-primary`
-            if (icons.indexOf(current_match[1].substring(0, current_match[1].lastIndexOf("-"))) === -1) {
-                glyphs.push(current_match[1]);
-            }
-        } else {
-            if (icons.indexOf(current_match[1]) === -1) {
-                glyphs.push(current_match[1]);
-            }
-        }
-    }
-
-    return glyphs;
-}
+const OUTPUT_FORMATS: { targetFormat: TargetFormat; fileExt: string }[] = [
+    { targetFormat: "woff2", fileExt: "woff2" },
+    { targetFormat: "sfnt", fileExt: "ttf" },
+];
 
 /**
  * This function will take an object of glyph names and output a subset of the standard fonts optimized in size for
@@ -52,21 +24,28 @@ function findGlyphsToRemove(svgFile: string, fontFamily: Subset, icons: string[]
  * @param options Object of options / tweaks for further customization. Defaults to 'Free' package.
  */
 function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: FontAwesomeOptions = { package: "free" }) {
+    const packageType = options.package;
     // Maps style to actual font name / file name.
     const fontMap: Record<Subset, string> = {
         solid: "fa-solid-900",
         light: "fa-light-300",
         regular: "fa-regular-400",
         brands: "fa-brands-400",
-        duotone: "fa-duotone-900"
+        duotone: "fa-duotone-900",
     };
     const fontTypes = Object.keys(fontMap);
+    let packageLocation: string;
 
     // Check to see if the user has either free, or pro installed.
-    if (!(existsSync(require.resolve("@fortawesome/fontawesome-free")) || existsSync(require.resolve("@fortawesome/fontawesome-pro")))) {
+    try {
+        packageLocation = require.resolve(`@fortawesome/fontawesome-${packageType}`);
+    } catch (e) {
         console.error("Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation.");
         return;
     }
+
+    const fontMeta = resolve(packageLocation, "../../metadata/icons.yml");
+    const fontFiles = resolve(packageLocation, "../../webfonts");
 
     // If 'subset' is set to array, turn into object defaulted for 'solid' use (fontawesome free)
     if (Array.isArray(subset)) {
@@ -86,35 +65,36 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         }
 
         const fontFamily = key as keyof typeof fontMap;
-        const svgFileName = fontMap[fontFamily];
-        const svgFilePath = `@fortawesome/fontawesome-${options.package}/webfonts/${svgFileName}.svg`;
+        const fontFileName = fontMap[fontFamily];
+        const fontFilePath = resolve(fontFiles, `./${fontFileName}.ttf`);
 
-        if (!existsSync(require.resolve(svgFilePath))) {
-            console.warn(`Unable to find SVG font file for requested font style '${fontFamily}'. Skipping.`);
+        if (!existsSync(require.resolve(fontFilePath))) {
+            console.warn(`Unable to find font file for requested font style '${fontFamily}'. Skipping.`);
             continue;
         }
 
-        const svgFile = readFileSync(require.resolve(svgFilePath)).toString();
-        const glyphsToRemove = findGlyphsToRemove(svgFile, fontFamily, icons);
-        const svgContentsNew = svgFile.replace(new RegExp(`(<glyph glyph-name="(${glyphsToRemove.join("|")})".*?\\/>)`, "gms"), "").replace(/>\s+</gms, "><");
-        const ttfUtils = svg2ttf(svgContentsNew, {
-            fullname: "FontAwesome " + fontFamily,
-            familyname: "FontAwesome",
-            subfamilyname: fontFamily,
-            ts: 0 // Manually specify empty timestamp for deterministic output
-            // Casting these as @types are out of date for svg2ttf
-        } as FontOptions);
-        const ttf = Buffer.from(ttfUtils.buffer);
+        // Pull unicode characters from fontawesome yml, aggregating into array
+        const iconMeta: Record<GlyphName, { unicode: string }> = yaml.parse(readFileSync(fontMeta, "utf8"));
+        let unicodeCharacters: string[] = [];
+        for (const icon of icons) {
+            if (!(icon in iconMeta)) {
+                console.warn(`Icon '${icon}' is not found in font metadata. Skipping.`);
+            } else {
+                unicodeCharacters.push(String.fromCodePoint(parseInt(iconMeta[icon]["unicode"], 16)));
+            }
+        }
 
         makeDirSync(resolve(outputDir));
+        const fontData = readFileSync(fontFilePath);
+        const outputFile = resolve(outputDir, fontFileName);
 
-        const outputFile = resolve(outputDir, svgFileName);
-
-        writeFileSync(`${outputFile}.svg`, svgContentsNew);
-        writeFileSync(`${outputFile}.ttf`, ttf);
-        writeFileSync(`${outputFile}.eot`, ttf2eot(ttf));
-        writeFileSync(`${outputFile}.woff`, ttf2woff(ttf));
-        writeFileSync(`${outputFile}.woff2`, ttf2woff2(ttf));
+        for (const oFormat of OUTPUT_FORMATS) {
+            subsetFont(fontData, unicodeCharacters.join(" "), {
+                targetFormat: oFormat.targetFormat,
+            }).then((data) => {
+                writeFileSync(`${outputFile}.${oFormat.fileExt}`, data);
+            });
+        }
     }
 }
 
