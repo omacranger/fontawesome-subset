@@ -63,7 +63,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
     const fontTypes = Object.keys(fontMap);
 
     // Check to see if the user has either free, or pro installed.
-    if (!(existsSync("node_modules/@fortawesome/fontawesome-free") || existsSync("node_modules/@fortawesome/fontawesome-pro"))) {
+    if (!(existsSync(require.resolve("@fortawesome/fontawesome-free")) || existsSync(require.resolve("@fortawesome/fontawesome-pro")))) {
         console.error("Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation.");
         return;
     }
@@ -87,14 +87,14 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         const fontFamily = key as keyof typeof fontMap;
         const svgFileName = fontMap[fontFamily];
-        const svgFilePath = `node_modules/@fortawesome/fontawesome-${options.package}/webfonts/${svgFileName}.svg`;
+        const svgFilePath = `@fortawesome/fontawesome-${options.package}/webfonts/${svgFileName}.svg`;
 
-        if (!existsSync(svgFilePath)) {
+        if (!existsSync(require.resolve(svgFilePath))) {
             console.warn(`Unable to find SVG font file for requested font style '${fontFamily}'. Skipping.`);
             continue;
         }
 
-        const svgFile = readFileSync(svgFilePath).toString();
+        const svgFile = readFileSync(require.resolve(svgFilePath)).toString();
         const glyphsToRemove = findGlyphsToRemove(svgFile, fontFamily, icons);
         const svgContentsNew = svgFile.replace(new RegExp(`(<glyph glyph-name="(${glyphsToRemove.join("|")})".*?\\/>)`, "gms"), "").replace(/>\s+</gms, "><");
         const ttfUtils = svg2ttf(svgContentsNew, {
@@ -119,4 +119,4 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 }
 
 export { fontawesomeSubset };
-export * from "./types";
+export { FontAwesomeOptions, Subset, SubsetOption, GlyphName } from "./types";
