@@ -1,5 +1,5 @@
 declare module "subset-font" {
-    export type TargetFormat = 'sfnt' | 'woff' | 'woff2' | 'truetype';
+    export type TargetFormat = "sfnt" | "woff" | "woff2" | "truetype";
 
     export interface SubsetFontOptions {
         targetFormat?: TargetFormat;

@@ -52,6 +52,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         subset = { solid: subset };
     }
 
+    const iconMeta: Record<GlyphName, { unicode: string }> = yaml.parse(readFileSync(fontMeta, "utf8"));
     const entries = Object.entries(subset);
     for (const [key, icons] of entries) {
         // Skip if current font family is not found in font_map.
@@ -74,13 +75,18 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         }
 
         // Pull unicode characters from fontawesome yml, aggregating into array
-        const iconMeta: Record<GlyphName, { unicode: string }> = yaml.parse(readFileSync(fontMeta, "utf8"));
         let unicodeCharacters: string[] = [];
         for (const icon of icons) {
             if (!(icon in iconMeta)) {
                 console.warn(`Icon '${icon}' is not found in font metadata. Skipping.`);
             } else {
-                unicodeCharacters.push(String.fromCodePoint(parseInt(iconMeta[icon]["unicode"], 16)));
+                const charCode = iconMeta[icon]["unicode"];
+                unicodeCharacters.push(String.fromCodePoint(parseInt(charCode, 16)));
+
+                // Duotone secondary char codes are prefixed with a `10` for the secondary color
+                if(fontFamily === 'duotone'){
+                    unicodeCharacters.push(String.fromCodePoint(parseInt(`10${charCode}`, 16)));
+                }
             }
         }
 
@@ -88,6 +94,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         const fontData = readFileSync(fontFilePath);
         const outputFile = resolve(outputDir, fontFileName);
 
+        // Loop over our requested output formats, and generate our subsets
         for (const oFormat of OUTPUT_FORMATS) {
             subsetFont(fontData, unicodeCharacters.join(" "), {
                 targetFormat: oFormat.targetFormat,

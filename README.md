@@ -5,10 +5,11 @@ Love FontAwesome but don't need thousands of icons bundled on every page of the 
 ## Installation
 First, install fontawesome-subset:
 ```sh
-npm install --save-dev fontawesome-subset 
+npm install --save-dev fontawesome-subset
 ```
 
-Second, install the edition of FontAwesome you plan on using. If you're using the Pro version, see [below](#using-with-fontawesome-pro). For the free version, use the following:
+Second, install the edition of FontAwesome you plan on using. **Versions 5.12 and up are currently supported.** If you're using the Pro version, see [below](#using-with-fontawesome-pro). For the free version, use the following:
+
 ```sh
 npm install --save-dev @fortawesome/fontawesome-free
 ```
@@ -26,14 +27,14 @@ fontawesomeSubset(['check','square','caret-up'], 'sass/webfonts');
 ### Full Options
 
 #### fontawesomeSubset(subset, output_dir, options)
-- `subset` - Array containing list of glyph names (icon names) that you want to limit the subset to. When using FontAwesome Pro (see [below](#using-with-fontawesome-pro)) you can supply an object with key->value pairs for different FA styles (solid, regular, light, brands, duotone).
+- `subset` - Array containing list of glyph names (icon names) that you want to generate for the `solid` style. This can also be an object with key->value pairs for different FA styles (solid, regular¹, brands, light¹, duotone¹). Some Icons in these **¹** subsets are only available when used with FontAwesome Pro (see [below](#using-with-fontawesome-pro)).
 - `output_dir` - Directory that you want the webfonts to be generated in. Relative to current NPM process. Ex: `sass/webfonts`
 - `options` - Object of options to further customize the tool.
     - `package` - `free` or `pro` . Defaults to `free` version. See [below](#using-with-fontawesome-pro) for Pro instructions.
     
     
 ### Using with FontAwesome Pro
-FontAwesome (FA) Pro provides numerous additional icons, as well as different font weights (styles) that you can use. Obviously, you'll need to own the 'Pro' version of FA in order to use with this subsetting tool. If you've already purchased a license, follow the [installation instructions](https://fontawesome.com/how-to-use/on-the-web/setup/using-package-managers) for getting FontAwesome Pro up and running through NPM.
+FontAwesome (FA) Pro provides numerous additional icons, as well as additional font weights & styles that you can use. Obviously, you'll need to own the 'Pro' version of FA in order to use with this subsetting tool. If you've already purchased a license, follow the [installation instructions](https://fontawesome.com/docs/web/setup/packages) for getting FontAwesome Pro up and running through NPM.
 
 After installation, you can supply additional information to the `subset` parameter of `fontawesomeSubset` to create families for specific font styles. Make sure to include `package: 'pro'` inside the options parameter to generate from the Pro source instead and enable font creation for different weights / styles. 
 
@@ -55,15 +56,9 @@ The above example would output a directory with the following structure:
 ```
 /sass/
     /webfonts/
-        fa-regular-400.eot
-        fa-regular-400.svg
         fa-regular-400.ttf
-        fa-regular-400.woff
         fa-regular-400.woff2
-        fa-solid-900.eot
-        fa-solid-900.svg
         fa-solid-900.ttf
-        fa-solid-900.woff
         fa-solid-900.woff2
 ```
 
