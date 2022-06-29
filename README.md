@@ -8,7 +8,7 @@ First, install fontawesome-subset:
 npm install --save-dev fontawesome-subset
 ```
 
-Second, install the edition of FontAwesome you plan on using. **Versions 5.12 and up are currently supported.** If you're using the Pro version, see [below](#using-with-fontawesome-pro). For the free version, use the following:
+Second, install the edition of FontAwesome you plan on using. **Versions >=5.12.0 are currently supported.** If you're using the Pro version, see [below](#using-with-fontawesome-pro). For the free version, use the following:
 
 ```sh
 npm install --save-dev @fortawesome/fontawesome-free
