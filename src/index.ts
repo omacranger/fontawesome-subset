@@ -16,6 +16,20 @@ const OUTPUT_FORMATS: { targetFormat: TargetFormat; fileExt: string }[] = [
 ];
 
 /**
+ * Add an icon to the debug / warning error report.
+ *
+ * @param errors
+ * @param fontFamily
+ * @param icon
+ */
+function addIconError(errors: Partial<Record<Subset, string[]>>, fontFamily: Subset, icon: string | string[]) {
+    const iconArray = Array.isArray(icon) ? icon : [icon];
+    if (!errors[fontFamily]?.push(...iconArray)) {
+        errors[fontFamily] = iconArray;
+    }
+}
+
+/**
  * This function will take an object of glyph names and output a subset of the standard fonts optimized in size for
  * use on websites / external resources.
  *
@@ -53,8 +67,12 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         subset = { solid: subset };
     }
 
-    const iconMeta: Record<GlyphName, { unicode: string }> = yaml.parse(readFileSync(fontMeta, "utf8"));
+    const iconMeta: Record<GlyphName, { unicode: string; styles: string[] }> = yaml.parse(readFileSync(fontMeta, "utf8"));
     const entries = Object.entries(subset);
+
+    let promises: Promise<unknown>[] = [];
+    let iconErrors: Partial<Record<Subset, string[]>> = {};
+
     for (const [key, icons] of entries) {
         // Skip if current font family is not found in font_map.
         if (fontTypes.indexOf(key) === -1) {
@@ -72,20 +90,21 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         if (!existsSync(resolve(fontFilePath))) {
             console.warn(`Unable to find font file for requested font style '${fontFamily}'. Skipping.`);
+            addIconError(iconErrors, fontFamily, icons);
             continue;
         }
 
         // Pull unicode characters from fontawesome yml, aggregating into array
         let unicodeCharacters: string[] = [];
         for (const icon of icons) {
-            if (!(icon in iconMeta)) {
-                console.warn(`Icon '${icon}' is not found in font metadata. Skipping.`);
+            if (!(icon in iconMeta) || !iconMeta[icon].styles.includes(fontFamily)) {
+                addIconError(iconErrors, fontFamily, icon);
             } else {
                 const charCode = iconMeta[icon]["unicode"];
                 unicodeCharacters.push(String.fromCodePoint(parseInt(charCode, 16)));
 
                 // Duotone secondary char codes are prefixed with a `10` for the secondary color
-                if(fontFamily === 'duotone'){
+                if (fontFamily === "duotone") {
                     unicodeCharacters.push(String.fromCodePoint(parseInt(`10${charCode}`, 16)));
                 }
             }
@@ -97,13 +116,24 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
 
         // Loop over our requested output formats, and generate our subsets
         for (const oFormat of OUTPUT_FORMATS) {
-            subsetFont(fontData, unicodeCharacters.join(" "), {
-                targetFormat: oFormat.targetFormat,
-            }).then((data) => {
-                writeFileSync(`${outputFile}.${oFormat.fileExt}`, data);
-            });
+            promises.push(
+                subsetFont(fontData, unicodeCharacters.join(" "), {
+                    targetFormat: oFormat.targetFormat,
+                }).then((data) => {
+                    writeFileSync(`${outputFile}.${oFormat.fileExt}`, data);
+                })
+            );
         }
     }
+
+    Promise.all(promises).then(() => {
+        const iconErrorArray = Object.entries(iconErrors).map(([style, missing_icons]) => ({ style, missing_icons }));
+        if (iconErrorArray.length > 0) {
+            console.warn(`\nOne or more icons were not found in the icon metadata. Check that the icon is available in your version, tier, and that you are requesting the correct style.`);
+            console.table(iconErrorArray);
+            console.warn("See https://fontawesome.com/icons/ for icons, styles, and version availability.");
+        }
+    });
 }
 
 export { fontawesomeSubset };
