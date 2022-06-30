@@ -30,6 +30,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         solid: "fa-solid-900",
         light: "fa-light-300",
         regular: "fa-regular-400",
+        thin: "fa-thin-100",
         brands: "fa-brands-400",
         duotone: "fa-duotone-900",
     };
