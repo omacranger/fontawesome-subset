@@ -70,7 +70,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         const fontFileName = fontMap[fontFamily];
         const fontFilePath = resolve(fontFiles, `./${fontFileName}.ttf`);
 
-        if (!existsSync(require.resolve(fontFilePath))) {
+        if (!existsSync(resolve(fontFilePath))) {
             console.warn(`Unable to find font file for requested font style '${fontFamily}'. Skipping.`);
             continue;
         }
