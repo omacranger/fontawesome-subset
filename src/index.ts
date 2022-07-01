@@ -6,11 +6,10 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
 import { FontAwesomeOptions, GlyphName, Subset, SubsetOption } from "./types";
-import type { TargetFormat } from "subset-font";
 import subsetFont from "subset-font";
 import yaml from "yaml";
 
-const OUTPUT_FORMATS: { targetFormat: TargetFormat; fileExt: string }[] = [
+const OUTPUT_FORMATS: { targetFormat: "woff2" | "sfnt"; fileExt: string }[] = [
     { targetFormat: "woff2", fileExt: "woff2" },
     { targetFormat: "sfnt", fileExt: "ttf" },
 ];
