@@ -69,8 +69,8 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
     const iconMeta: Record<GlyphName, { unicode: string; styles: string[] }> = yaml.parse(readFileSync(fontMeta, "utf8"));
     const entries = Object.entries(subset);
 
-    let promises: Promise<unknown>[] = [];
-    let iconErrors: Partial<Record<Subset, string[]>> = {};
+    const promises: Promise<unknown>[] = [];
+    const iconErrors: Partial<Record<Subset, string[]>> = {};
 
     for (const [key, icons] of entries) {
         // Skip if current font family is not found in font_map.
@@ -94,7 +94,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         }
 
         // Pull unicode characters from fontawesome yml, aggregating into array
-        let unicodeCharacters: string[] = [];
+        const unicodeCharacters: string[] = [];
         for (const icon of icons) {
             if (!(icon in iconMeta) || !iconMeta[icon].styles.includes(fontFamily)) {
                 addIconError(iconErrors, fontFamily, icon);
