@@ -39,6 +39,8 @@ describe("fontawesomeSubset", () => {
                 regular: ["bell"],
                 brands: ["android"],
                 duotone: ["bells"],
+                light: ["plus"],
+                thin: ["plus"],
             },
             tempDir,
             { package: PACKAGE }
@@ -46,14 +48,12 @@ describe("fontawesomeSubset", () => {
 
         // char codes taken from FA icon page, checking to make sure they exist in the glyphs object
         const EXPECTED = [
-            // Plus
             { family: "fa-solid-900", icon: "plus" },
-            // Bell
             { family: "fa-regular-400", icon: "bell" },
-            // Android
             { family: "fa-brands-400", icon: "android" },
-            // Bells (Duotone)
             { family: "fa-duotone-900", duotone: true, icon: "bells" },
+            { family: "fa-thin-100", icon: "plus" },
+            { family: "fa-light-300", icon: "plus" },
         ];
 
         for (const expectation of EXPECTED) {
@@ -84,11 +84,22 @@ describe("fontawesomeSubset", () => {
                 solid: ["plus"],
                 regular: ["bell"],
                 brands: ["android"],
+                light: ["acorn"],
+                thin: ["album"],
+                duotone: ["abacus"],
             },
-            tempDir
+            tempDir,
+            { package: "pro" }
         );
 
-        const fontNames = ["fa-solid-900", "fa-regular-400", "fa-brands-400"]
+        const fontNames = [
+            "fa-solid-900",
+            "fa-regular-400",
+            "fa-brands-400",
+            "fa-duotone-900",
+            "fa-thin-100",
+            "fa-light-300",
+        ]
             .map((name) => [`${name}.ttf`, `${name}.woff2`])
             .flat();
         const fontPromises = fontNames.map((name) => fs.promises.access(`${tempDir}${SEP}${name}`));
