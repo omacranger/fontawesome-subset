@@ -4,7 +4,7 @@ import { loadSync } from "opentype.js";
 import { createTempDir, SEP } from "./test-utils";
 import { fontawesomeSubset } from "../src";
 import yaml from "yaml";
-import { findIconByName } from "../dist/utils";
+import { findIconByName } from "../src/utils";
 
 jest.mock("subset-font", () => ({
     __esModule: true,

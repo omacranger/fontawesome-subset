@@ -1,5 +1,5 @@
 import yaml from "yaml";
-import { addIconError, findIconByName } from "../dist/utils";
+import { addIconError, findIconByName } from "../src/utils";
 import { Subset } from "../src";
 
 const iconMetadata = yaml.parse(`
