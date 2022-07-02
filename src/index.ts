@@ -5,28 +5,15 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
-import { FontAwesomeOptions, GlyphName, Subset, SubsetOption } from "./types";
+import { FontAwesomeOptions, IconYAML, Subset, SubsetOption } from "./types";
 import subsetFont from "subset-font";
 import yaml from "yaml";
+import { addIconError, findIconByName } from "./utils";
 
 const OUTPUT_FORMATS: { targetFormat: "woff2" | "sfnt"; fileExt: string }[] = [
     { targetFormat: "woff2", fileExt: "woff2" },
     { targetFormat: "sfnt", fileExt: "ttf" },
 ];
-
-/**
- * Add an icon to the debug / warning error report.
- *
- * @param errors
- * @param fontFamily
- * @param icon
- */
-function addIconError(errors: Partial<Record<Subset, string[]>>, fontFamily: Subset, icon: string | string[]) {
-    const iconArray = Array.isArray(icon) ? icon : [icon];
-    if (!errors[fontFamily]?.push(...iconArray)) {
-        errors[fontFamily] = iconArray;
-    }
-}
 
 /**
  * This function will take an object of glyph names and output a subset of the standard fonts optimized in size for
@@ -36,8 +23,12 @@ function addIconError(errors: Partial<Record<Subset, string[]>>, fontFamily: Sub
  * @param outputDir Directory output generated webfonts.
  * @param options Object of options / tweaks for further customization. Defaults to 'Free' package.
  */
-function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: FontAwesomeOptions = { package: "free" }) {
-    const packageType = options.package;
+function fontawesomeSubset(
+    subset: SubsetOption,
+    outputDir: string,
+    options: FontAwesomeOptions = { package: "free" }
+) {
+    const { package: packageType } = options;
     // Maps style to actual font name / file name.
     const fontMap: Record<Subset, string> = {
         solid: "fa-solid-900",
@@ -54,8 +45,10 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
     try {
         packageLocation = require.resolve(`@fortawesome/fontawesome-${packageType}`);
     } catch (e) {
-        console.error("Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation.");
-        return;
+        console.error(
+            "Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation."
+        );
+        return Promise.resolve(false);
     }
 
     const fontMeta = resolve(packageLocation, "../../metadata/icons.yml");
@@ -66,7 +59,7 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         subset = { solid: subset };
     }
 
-    const iconMeta: Record<GlyphName, { unicode: string; styles: string[] }> = yaml.parse(readFileSync(fontMeta, "utf8"));
+    const iconMeta: IconYAML = yaml.parse(readFileSync(fontMeta, "utf8"));
     const entries = Object.entries(subset);
 
     const promises: Promise<unknown>[] = [];
@@ -78,8 +71,8 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
             continue;
         }
 
-        // Bail early if icons isn't set, or isn't an array
-        if (!Array.isArray(icons)) {
+        // Bail early if icons isn't set, isn't an array, or is empty
+        if (!Array.isArray(icons) || icons.length === 0) {
             continue;
         }
 
@@ -88,7 +81,9 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         const fontFilePath = resolve(fontFiles, `./${fontFileName}.ttf`);
 
         if (!existsSync(resolve(fontFilePath))) {
-            console.warn(`Unable to find font file for requested font style '${fontFamily}'. Skipping.`);
+            console.warn(
+                `Unable to find font file for requested font style '${fontFamily}'. Skipping.`
+            );
             addIconError(iconErrors, fontFamily, icons);
             continue;
         }
@@ -96,10 +91,12 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         // Pull unicode characters from fontawesome yml, aggregating into array
         const unicodeCharacters: string[] = [];
         for (const icon of icons) {
-            if (!(icon in iconMeta) || !iconMeta[icon].styles.includes(fontFamily)) {
+            const foundIcon = findIconByName(iconMeta, icon);
+
+            if (!foundIcon || !foundIcon.styles.includes(fontFamily)) {
                 addIconError(iconErrors, fontFamily, icon);
             } else {
-                const charCode = iconMeta[icon]["unicode"];
+                const charCode = foundIcon.unicode;
                 unicodeCharacters.push(String.fromCodePoint(parseInt(charCode, 16)));
 
                 // Duotone secondary char codes are prefixed with a `10` for the secondary color
@@ -125,13 +122,24 @@ function fontawesomeSubset(subset: SubsetOption, outputDir: string, options: Fon
         }
     }
 
-    Promise.all(promises).then(() => {
-        const iconErrorArray = Object.entries(iconErrors).map(([style, missing_icons]) => ({ style, missing_icons }));
+    return Promise.all(promises).then(() => {
+        const iconErrorArray = Object.entries(iconErrors).map(([style, missing_icons]) => ({
+            style,
+            missing_icons,
+        }));
         if (iconErrorArray.length > 0) {
-            console.warn(`\nOne or more icons were not found in the icon metadata. Check that the icon is available in your version, tier, and that you are requesting the correct style.`);
+            console.warn(
+                `\nOne or more icons were not found in the icon metadata. Check that the icon is available in your version, tier, and that you are requesting the correct style.`
+            );
             console.table(iconErrorArray);
-            console.warn("See https://fontawesome.com/icons/ for icons, styles, and version availability.");
+            console.warn(
+                "See https://fontawesome.com/icons/ for icons, styles, and version availability."
+            );
+
+            return false;
         }
+
+        return true;
     });
 }
 

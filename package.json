@@ -5,14 +5,15 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc",
-        "build-watch": "tsc -w",
+        "build": "tsc -p tsconfig.build.json",
+        "build-watch": "tsc -w -p tsconfig.build.json",
         "eslint": "eslint \"src/**\"",
         "prepare": "husky install",
         "prepublishOnly": "npm run build",
         "pretty-quick": "pretty-quick",
         "prettier-check": "pretty-quick --check",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest",
+        "test-watch": "jest --watch"
     },
     "author": {
         "name": "Logan Graham",
@@ -56,15 +57,20 @@
         }
     },
     "devDependencies": {
+        "@types/jest": "^28.1.4",
         "@types/mkdirp": "^1.0.2",
         "@types/node": "^16.9.1",
+        "@types/opentype.js": "^1.3.3",
         "@types/subset-font": "^1.4.0",
         "@typescript-eslint/eslint-plugin": "^5.30.0",
         "@typescript-eslint/parser": "^5.30.0",
         "eslint": "^8.18.0",
         "husky": "^8.0.1",
+        "jest": "^28.1.2",
+        "opentype.js": "^1.3.4",
         "prettier": "^2.7.1",
         "pretty-quick": "^3.1.3",
+        "ts-jest": "^28.0.5",
         "typescript": "^4.7.4"
     }
 }
