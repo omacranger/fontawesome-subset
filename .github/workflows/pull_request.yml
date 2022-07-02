@@ -1,0 +1,77 @@
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  cache-packages:
+    name: Build & Cache Node Modules
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: |
+          printf "@fortawesome:registry=https://npm.fontawesome.com/\n//npm.fontawesome.com/:_authToken=${{ secrets.FA_NPM_KEY }}" > .npmrc
+          npm ci
+          rm .npmrc
+      - uses: actions/cache@v3
+        id: load-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+  test:
+    name: Run Tests
+    # Start reused configuration
+    runs-on: ubuntu-latest
+    needs: [cache-packages]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: load-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      # end reused configuration
+      - run: npm test
+
+  lint:
+    name: ESLint
+    # Start reused configuration
+    runs-on: ubuntu-latest
+    needs: [cache-packages]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: load-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      # end reused configuration
+      - run: npm run eslint
+
+  prettier:
+    name: Prettier Check
+    # Start reused configuration
+    runs-on: ubuntu-latest
+    needs: [cache-packages]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: load-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      # end reused configuration
+      - run: npm run prettier-check
