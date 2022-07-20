@@ -1,5 +1,12 @@
 export interface FontAwesomeOptions {
-    package: "free" | "pro";
+    /**
+     * The FontAwesome package type we should use. Defaults to 'free'.
+     */
+    package?: "free" | "pro";
+    /**
+     * Requested font output targets.
+     */
+    targetFormats?: TargetFormat[];
 }
 
 export type Subset = "solid" | "light" | "regular" | "thin" | "brands" | "duotone";
@@ -7,6 +14,8 @@ export type Subset = "solid" | "light" | "regular" | "thin" | "brands" | "duoton
 export type GlyphName = string;
 
 export type SubsetOption = GlyphName[] | Partial<Record<Subset, GlyphName[]>>;
+
+export type TargetFormat = "woff" | "woff2" | "sfnt";
 
 /**
  * Type of individual result / item inside the YAML file.
