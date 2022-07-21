@@ -5,15 +5,16 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
-import { FontAwesomeOptions, IconYAML, Subset, SubsetOption } from "./types";
+import { FontAwesomeOptions, IconYAML, Subset, SubsetOption, TargetFormat } from "./types";
 import subsetFont from "subset-font";
 import yaml from "yaml";
 import { addIconError, findIconByName } from "./utils";
 
-const OUTPUT_FORMATS: { targetFormat: "woff2" | "sfnt"; fileExt: string }[] = [
-    { targetFormat: "woff2", fileExt: "woff2" },
-    { targetFormat: "sfnt", fileExt: "ttf" },
-];
+const OUTPUT_FORMAT_MAP: Record<TargetFormat, string> = {
+    sfnt: "ttf",
+    woff: "woff",
+    woff2: "woff2",
+};
 
 /**
  * This function will take an object of glyph names and output a subset of the standard fonts optimized in size for
@@ -26,9 +27,9 @@ const OUTPUT_FORMATS: { targetFormat: "woff2" | "sfnt"; fileExt: string }[] = [
 function fontawesomeSubset(
     subset: SubsetOption,
     outputDir: string,
-    options: FontAwesomeOptions = { package: "free" }
+    options: FontAwesomeOptions = {}
 ) {
-    const { package: packageType } = options;
+    const { package: packageType = "free", targetFormats = ["woff2", "sfnt"] } = options;
     // Maps style to actual font name / file name.
     const fontMap: Record<Subset, string> = {
         solid: "fa-solid-900",
@@ -48,6 +49,13 @@ function fontawesomeSubset(
         console.error(
             "Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation."
         );
+        return Promise.resolve(false);
+    }
+
+    // Check that we have atleast one target format for output
+    if (!Array.isArray(targetFormats) || targetFormats.length === 0) {
+        console.error("One or more target formats are required. Exiting.");
+
         return Promise.resolve(false);
     }
 
@@ -111,12 +119,12 @@ function fontawesomeSubset(
         const outputFile = resolve(outputDir, fontFileName);
 
         // Loop over our requested output formats, and generate our subsets
-        for (const oFormat of OUTPUT_FORMATS) {
+        for (const targetFormat of targetFormats) {
             promises.push(
                 subsetFont(fontData, unicodeCharacters.join(" "), {
-                    targetFormat: oFormat.targetFormat,
+                    targetFormat: targetFormat,
                 }).then((data) => {
-                    writeFileSync(`${outputFile}.${oFormat.fileExt}`, data);
+                    writeFileSync(`${outputFile}.${OUTPUT_FORMAT_MAP[targetFormat]}`, data);
                 })
             );
         }

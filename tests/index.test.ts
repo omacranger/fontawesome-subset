@@ -77,7 +77,7 @@ describe("fontawesomeSubset", () => {
         }
     });
 
-    it("should create ttf & woff2 files for each requested subset", async () => {
+    it("should create ttf, woff, and woff2 files for each requested subset", async () => {
         const tempDir = await createTempDir();
         await fontawesomeSubset(
             {
@@ -89,7 +89,7 @@ describe("fontawesomeSubset", () => {
                 duotone: ["abacus"],
             },
             tempDir,
-            { package: "pro" }
+            { package: "pro", targetFormats: ["woff2", "woff", "sfnt"] }
         );
 
         const fontNames = [
@@ -100,7 +100,7 @@ describe("fontawesomeSubset", () => {
             "fa-thin-100",
             "fa-light-300",
         ]
-            .map((name) => [`${name}.ttf`, `${name}.woff2`])
+            .map((name) => [`${name}.ttf`, `${name}.woff`, `${name}.woff2`])
             .flat();
         const fontPromises = fontNames.map((name) => fs.promises.access(`${tempDir}${SEP}${name}`));
         const wasSuccessful = await Promise.all(fontPromises)
@@ -142,6 +142,14 @@ describe("fontawesomeSubset", () => {
         expect(warnSpy).toBeCalledWith(
             "Unable to find font file for requested font style 'solid'. Skipping."
         );
+        expect(response).toBeFalsy();
+    });
+
+    it("should error when no target formats are provided", async () => {
+        const errorSpy = jest.spyOn(console, "error").mockImplementationOnce(() => false);
+        const response = await fontawesomeSubset(["arrow-left"], "", { targetFormats: [] });
+
+        expect(errorSpy).toBeCalledWith("One or more target formats are required. Exiting.");
         expect(response).toBeFalsy();
     });
 });
