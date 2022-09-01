@@ -37,6 +37,13 @@ describe("findIconByName", () => {
         expect(icon?.unicode).toEqual("2b");
         expect(icon?.styles).toEqual(["solid"]);
     });
+
+    it("should find an icon by an alias name", () => {
+        const icon = findIconByName(iconMetadata, "add");
+        expect(icon).toBeTruthy();
+        expect(icon?.unicode).toEqual("2b");
+        expect(icon?.styles).toEqual(["solid"]);
+    });
 });
 
 describe("addIconError", () => {
