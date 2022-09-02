@@ -5,6 +5,7 @@ import { createTempDir, SEP } from "./test-utils";
 import { fontawesomeSubset } from "../src";
 import yaml from "yaml";
 import { findIconByName } from "../src/utils";
+import { PackageType } from "../src/types";
 
 jest.mock("subset-font", () => ({
     __esModule: true,
@@ -14,6 +15,11 @@ jest.mock("subset-font", () => ({
 const subsetMock = jest.mocked(subsetFont);
 const subsetActual = jest.requireActual("subset-font");
 
+const PACKAGE_ENV = process.env.FA_TEST_PACKAGE ?? "";
+const PACKAGE: PackageType = ["free", "pro"].includes(PACKAGE_ENV)
+    ? (PACKAGE_ENV as PackageType)
+    : "free";
+
 describe("fontawesomeSubset", () => {
     beforeEach(() => {
         // Set all tests to use mocked subset-font unless specified
@@ -22,8 +28,6 @@ describe("fontawesomeSubset", () => {
 
     it("should add all requested glyphs for valid icons", async () => {
         subsetMock.mockImplementation(subsetActual);
-
-        const PACKAGE = "pro";
 
         const IconYAML = yaml.parse(
             readFileSync(
@@ -37,10 +41,15 @@ describe("fontawesomeSubset", () => {
             {
                 solid: ["plus"],
                 regular: ["bell"],
-                brands: ["android"],
-                duotone: ["bells"],
-                light: ["plus"],
-                thin: ["plus"],
+                ...(PACKAGE === "pro"
+                    ? {
+                          brands: ["android"],
+                          duotone: ["bells"],
+                          light: ["plus"],
+                          thin: ["plus"],
+                          "sharp-solid": ["star"],
+                      }
+                    : {}),
             },
             tempDir,
             { package: PACKAGE }
@@ -50,11 +59,19 @@ describe("fontawesomeSubset", () => {
         const EXPECTED = [
             { family: "fa-solid-900", icon: "plus" },
             { family: "fa-regular-400", icon: "bell" },
-            { family: "fa-brands-400", icon: "android" },
-            { family: "fa-duotone-900", duotone: true, icon: "bells" },
-            { family: "fa-thin-100", icon: "plus" },
-            { family: "fa-light-300", icon: "plus" },
+            ...(PACKAGE === "pro"
+                ? [
+                      { family: "fa-brands-400", icon: "android" },
+                      { family: "fa-duotone-900", duotone: true, icon: "bells" },
+                      { family: "fa-thin-100", icon: "plus" },
+                      { family: "fa-light-300", icon: "plus" },
+                      { family: "fa-sharp-solid-900", icon: "star" },
+                  ]
+                : []),
         ];
+
+        // # of font styles + 1 extra for duotone
+        expect.assertions(EXPECTED.length + (PACKAGE === "pro" ? 1 : 0));
 
         for (const expectation of EXPECTED) {
             const font = loadSync(`${tempDir}${SEP}${expectation.family}.ttf`);
@@ -83,22 +100,25 @@ describe("fontawesomeSubset", () => {
             {
                 solid: ["plus"],
                 regular: ["bell"],
-                brands: ["android"],
-                light: ["acorn"],
-                thin: ["album"],
-                duotone: ["abacus"],
+                ...(PACKAGE == "pro"
+                    ? {
+                          brands: ["android"],
+                          light: ["acorn"],
+                          thin: ["album"],
+                          duotone: ["abacus"],
+                      }
+                    : {}),
             },
             tempDir,
-            { package: "pro", targetFormats: ["woff2", "woff", "sfnt"] }
+            { package: PACKAGE, targetFormats: ["woff2", "woff", "sfnt"] }
         );
 
         const fontNames = [
             "fa-solid-900",
             "fa-regular-400",
-            "fa-brands-400",
-            "fa-duotone-900",
-            "fa-thin-100",
-            "fa-light-300",
+            ...(PACKAGE === "pro"
+                ? ["fa-brands-400", "fa-duotone-900", "fa-thin-100", "fa-light-300"]
+                : []),
         ]
             .map((name) => [`${name}.ttf`, `${name}.woff`, `${name}.woff2`])
             .flat();
