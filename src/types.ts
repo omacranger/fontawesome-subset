@@ -33,11 +33,17 @@ export interface FAIconType {
      * Subsets this icon is available in.
      */
     styles: Partial<Subset>[];
-
-    /** Alternative names of the icon. */
+    /*
+     * Alternative means of identifying the icon.
+     */
     aliases?: {
-        names?: string[]
-    }
+        names?: string[];
+        unicodes?: {
+            composite?: string[];
+            primary?: string[];
+            secondary?: string[];
+        };
+    };
 }
 
 /**

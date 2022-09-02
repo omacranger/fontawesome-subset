@@ -28,6 +28,32 @@ plus:
     - solid
   unicode: 2b
   voted: false
+asterisk:
+  aliases:
+    unicodes:
+      composite:
+        - '2731'
+        - f069
+      primary:
+        - f069
+      secondary:
+        - 10f069
+        - 102a
+  changes:
+    - 1.0.0
+    - 5.0.0
+    - 6.0.0-beta1
+  label: asterisk
+  search:
+    terms: []
+  styles:
+    - solid
+    - regular
+    - light
+    - thin
+    - duotone
+  unicode: 2a
+  voted: false
 `);
 
 describe("findIconByName", () => {
@@ -35,14 +61,40 @@ describe("findIconByName", () => {
         const icon = findIconByName(iconMetadata, "plus");
         expect(icon).toBeTruthy();
         expect(icon?.unicode).toEqual("2b");
-        expect(icon?.styles).toEqual(["solid"]);
     });
 
     it("should find an icon by an alias name", () => {
         const icon = findIconByName(iconMetadata, "add");
         expect(icon).toBeTruthy();
         expect(icon?.unicode).toEqual("2b");
-        expect(icon?.styles).toEqual(["solid"]);
+    });
+
+    it("should find an icon by a unicode name", () => {
+        const icon = findIconByName(iconMetadata, "2a");
+        expect(icon).toBeTruthy();
+        expect(icon?.unicode).toEqual("2a");
+        expect(icon?.label).toEqual("asterisk");
+    });
+
+    it("should find an icon by a unicode alias composite value", () => {
+        const icon = findIconByName(iconMetadata, "2795");
+        expect(icon).toBeTruthy();
+        expect(icon?.unicode).toEqual("2b");
+        expect(icon?.label).toEqual("plus");
+    });
+
+    it("should find an icon by a unicode alias primary value", () => {
+        const icon = findIconByName(iconMetadata, "f069");
+        expect(icon).toBeTruthy();
+        expect(icon?.unicode).toEqual("2a");
+        expect(icon?.label).toEqual("asterisk");
+    });
+
+    it("should find an icon by a unicode alias secondary value", () => {
+        const icon = findIconByName(iconMetadata, "102b");
+        expect(icon).toBeTruthy();
+        expect(icon?.unicode).toEqual("2b");
+        expect(icon?.label).toEqual("plus");
     });
 });
 
