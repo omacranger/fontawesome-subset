@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        type: string
+        default: "6.2.0"
+      package:
+        required: false
+        type: string
+        default: "free"
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - uses: actions/cache@v3
+        id: load-cache
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      - run: |
+          if [ "${{ inputs.package }}" != "free" ]; then \
+            printf "@fortawesome:registry=https://npm.fontawesome.com/\n//npm.fontawesome.com/:_authToken=${{ secrets.FA_NPM_KEY }}" > .npmrc; \
+          fi
+          if [ "${{ inputs.version }}" != "6.2.0" ] || [ "${{ inputs.package }}" != "free" ]; then \
+            npm i --no-save @fortawesome/fontawesome-${{ inputs.package }}@${{ inputs.version }}; \
+          fi
+          if [ "${{ inputs.package }}" != "free" ]; then \
+            rm .npmrc; \
+          fi
+      - run: npm test
+        env:
+          FA_TEST_PACKAGE: ${{ inputs.package }}
