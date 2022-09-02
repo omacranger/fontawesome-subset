@@ -33,6 +33,11 @@ export interface FAIconType {
      * Subsets this icon is available in.
      */
     styles: Partial<Subset>[];
+
+    /** Alternative names of the icon. */
+    aliases?: {
+        names?: string[]
+    }
 }
 
 /**
