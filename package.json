@@ -65,6 +65,7 @@
         "@types/subset-font": "^1.4.0",
         "@typescript-eslint/eslint-plugin": "^5.30.0",
         "@typescript-eslint/parser": "^5.30.0",
+        "compare-versions": "^5.0.1",
         "eslint": "^8.18.0",
         "husky": "^8.0.1",
         "jest": "^28.1.2",
