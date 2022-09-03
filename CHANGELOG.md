@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.3.0](https://github.com/omacranger/fontawesome-subset/compare/4.2.0...4.3.0)
+
+-   Support FontAwesome 6.2.0+ including new `sharp-solid` subset
+-   Add ability to locate icons based on their unicode value (for those using them in CSS), or any other aliases. Thanks to #23 for starting this effort
+
 ## [4.2.0](https://github.com/omacranger/fontawesome-subset/compare/4.1.0...4.2.0)
 
 -   Re-add support for `woff` file formats, and allow customizing exported fonts via `targetFormats` option.

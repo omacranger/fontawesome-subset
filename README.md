@@ -32,7 +32,7 @@ fontawesomeSubset(["check", "square", "caret-up"], "sass/webfonts");
 
 #### fontawesomeSubset(subset, output_dir, options)
 
--   `subset` - Array containing list of glyph names (icon names) that you want to generate for the `solid` style. This can also be an object with key->value pairs for different FA styles (solid, regular¹, brands, light¹, duotone¹). Some Icons in these **¹** subsets are only available when used with FontAwesome Pro (see [below](#using-with-fontawesome-pro)).
+-   `subset` - Array containing list of icon identifiers (icon or glyph names, unicode value, or a supported alias) that you want to generate for the `solid` style. This can also be an object with key->value pairs for different FA styles (solid, regular¹, brands, light¹, duotone¹, sharp-solid¹). Some Icons in these **¹** subsets are only available when used with FontAwesome Pro (see [below](#using-with-fontawesome-pro)).
 -   `output_dir` - Directory that you want the webfonts to be generated in. Relative to current NPM process. Ex: `sass/webfonts`
 -   `options` - Object of options to further customize the tool.
     -   `package` - `free` or `pro` . Defaults to `free` version. See [below](#using-with-fontawesome-pro) for Pro instructions.
@@ -49,7 +49,13 @@ After installation, you can supply additional information to the `subset` parame
 ```javascript
 fontawesomeSubset(
     {
-        regular: ["check", "square", "caret-up"],
+        regular: [
+            "check",
+            "square",
+            "caret-up",
+            "f007" /* fa-user unicode */,
+            "add" /* fa-plus alias */,
+        ],
         solid: ["plus", "minus"],
     },
     "sass/webfonts",
@@ -59,7 +65,7 @@ fontawesomeSubset(
 );
 ```
 
-You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, or `duotone`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
+You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, `duotone`, or `sharp-solid`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
 
 The above example would output a directory with the following structure:
 
