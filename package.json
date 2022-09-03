@@ -45,8 +45,8 @@
         "optimize"
     ],
     "peerDependencies": {
-        "@fortawesome/fontawesome-free": ">5.12.0",
-        "@fortawesome/fontawesome-pro": ">5.12.0"
+        "@fortawesome/fontawesome-free": ">=5.12.0",
+        "@fortawesome/fontawesome-pro": ">=5.12.0"
     },
     "peerDependenciesMeta": {
         "@fortawesome/fontawesome-free": {
