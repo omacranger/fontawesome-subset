@@ -25,13 +25,19 @@ jobs:
     uses: ./.github/workflows/run_tests.yml
     strategy:
       matrix:
+        # any push made by the code owner in a PR prepping for releases is also valid (mostly because we have access to secrets).
+        is_owner_push:
+          - ${{ github.event_name == 'pull_request' && github.triggering_actor == 'omacranger' }}
         is_master_push:
           - ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        version: ["5.12.0", "5.13.1", "5.14.0", "5.15.4", "6.1.1", "6.2.0"]
+        version: ["5.15.4", "6.1.1", "6.2.0"]
         package: ["free", "pro"]
         exclude:
           - is_master_push: false
+            is_owner_push: false
             package: "pro"
+    secrets:
+      FA_NPM_KEY: "${{ secrets.FA_NPM_KEY }}"
     with:
       version: ${{ matrix.version }}
       package: ${{ matrix.package }}

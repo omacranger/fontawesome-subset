@@ -9,6 +9,10 @@ on:
         required: false
         type: string
         default: "free"
+    secrets:
+      FA_NPM_KEY:
+        required: false
+        description: FontAwesome NPM Key
 
 jobs:
   run_tests:
