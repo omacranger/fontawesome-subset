@@ -1,13 +1,10 @@
 import subsetFont from "subset-font";
 import fs, { existsSync, readFileSync } from "fs";
 import { loadSync } from "opentype.js";
-import { createTempDir, SEP } from "./test-utils";
+import { createTempDir, itFree, itGTE, itPro, PACKAGE, SEP } from "./test-utils";
 import { fontawesomeSubset, SubsetOption } from "../src";
 import yaml from "yaml";
 import { findIconByName } from "../src/utils";
-import { PackageType } from "../src/types";
-import { resolve } from "path";
-import { compare } from "compare-versions";
 
 jest.mock("subset-font", () => ({
     __esModule: true,
@@ -16,23 +13,6 @@ jest.mock("subset-font", () => ({
 
 const subsetMock = jest.mocked(subsetFont);
 const subsetActual = jest.requireActual("subset-font");
-
-const PACKAGE_ENV = process.env.FA_TEST_PACKAGE ?? "";
-const PACKAGE: PackageType = ["free", "pro"].includes(PACKAGE_ENV)
-    ? (PACKAGE_ENV as PackageType)
-    : "free";
-const FA_VERSION =
-    JSON.parse(
-        readFileSync(
-            resolve(require.resolve(`@fortawesome/fontawesome-${PACKAGE}`), "../../package.json"),
-            "utf-8"
-        )
-    ).version ?? "";
-
-const itFree = PACKAGE === "free" ? it : it.skip;
-const itPro = PACKAGE === "pro" ? it : it.skip;
-const itGTE = (version: string, packageType?: PackageType) =>
-    compare(FA_VERSION, version, ">=") && (!packageType || packageType === PACKAGE) ? it : it.skip;
 
 describe("fontawesomeSubset", () => {
     beforeEach(() => {
