@@ -2,14 +2,16 @@ export interface FontAwesomeOptions {
     /**
      * The FontAwesome package type we should use. Defaults to 'free'.
      */
-    package?: "free" | "pro";
+    package?: PackageType;
     /**
      * Requested font output targets.
      */
     targetFormats?: TargetFormat[];
 }
 
-export type Subset = "solid" | "light" | "regular" | "thin" | "brands" | "duotone";
+export type PackageType = "free" | "pro";
+
+export type Subset = "solid" | "light" | "regular" | "thin" | "brands" | "duotone" | "sharp-solid";
 
 export type GlyphName = string;
 
@@ -33,14 +35,52 @@ export interface FAIconType {
      * Subsets this icon is available in.
      */
     styles: Partial<Subset>[];
-
-    /** Alternative names of the icon. */
+    /*
+     * Alternative means of identifying the icon.
+     */
     aliases?: {
-        names?: string[]
-    }
+        names?: string[];
+        unicodes?: {
+            composite?: string[];
+            primary?: string[];
+            secondary?: string[];
+        };
+    };
+}
+
+export type FAFamilyType = "classic" | "duotone" | "sharp";
+export type FAStyleType = "solid" | "thin" | "light" | "regular" | "brands";
+
+/**
+ * Type of individual result / item inside the YAML file.
+ */
+export interface FAFamilyMetaType {
+    /**
+     * Label / display name of the icon.
+     */
+    label: string;
+    /**
+     * Unicode character for the icon.
+     */
+    unicode: string;
+    /**
+     * Family styles available for each icon & family type.
+     */
+    familyStylesByLicense: Record<
+        PackageType,
+        {
+            family: FAFamilyType;
+            style: FAStyleType;
+        }[]
+    >;
 }
 
 /**
  * Type of the YAML files bundled with FontAwesome.
  */
 export type IconYAML = Record<GlyphName, FAIconType | undefined>;
+
+/**
+ * Type of the YAML files bundled with FontAwesome.
+ */
+export type IconFamilyYAML = Record<GlyphName, FAFamilyMetaType | undefined>;

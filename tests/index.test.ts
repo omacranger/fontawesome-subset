@@ -1,8 +1,8 @@
 import subsetFont from "subset-font";
 import fs, { existsSync, readFileSync } from "fs";
 import { loadSync } from "opentype.js";
-import { createTempDir, SEP } from "./test-utils";
-import { fontawesomeSubset } from "../src";
+import { createTempDir, itFree, itGTE, itPro, PACKAGE, SEP } from "./test-utils";
+import { fontawesomeSubset, SubsetOption } from "../src";
 import yaml from "yaml";
 import { findIconByName } from "../src/utils";
 
@@ -20,10 +20,11 @@ describe("fontawesomeSubset", () => {
         subsetMock.mockImplementation(jest.fn(() => Promise.resolve(Buffer.from(""))));
     });
 
-    it("should add all requested glyphs for valid icons", async () => {
+    const testShouldAllAllRequiredGlyphs = async (
+        subsets: SubsetOption,
+        expected: { family: string; icon: string; duotone?: boolean }[]
+    ) => {
         subsetMock.mockImplementation(subsetActual);
-
-        const PACKAGE = "pro";
 
         const IconYAML = yaml.parse(
             readFileSync(
@@ -33,30 +34,9 @@ describe("fontawesomeSubset", () => {
         );
 
         const tempDir = await createTempDir();
-        await fontawesomeSubset(
-            {
-                solid: ["plus"],
-                regular: ["bell"],
-                brands: ["android"],
-                duotone: ["bells"],
-                light: ["plus"],
-                thin: ["plus"],
-            },
-            tempDir,
-            { package: PACKAGE }
-        );
+        await fontawesomeSubset(subsets, tempDir, { package: PACKAGE });
 
-        // char codes taken from FA icon page, checking to make sure they exist in the glyphs object
-        const EXPECTED = [
-            { family: "fa-solid-900", icon: "plus" },
-            { family: "fa-regular-400", icon: "bell" },
-            { family: "fa-brands-400", icon: "android" },
-            { family: "fa-duotone-900", duotone: true, icon: "bells" },
-            { family: "fa-thin-100", icon: "plus" },
-            { family: "fa-light-300", icon: "plus" },
-        ];
-
-        for (const expectation of EXPECTED) {
+        for (const expectation of expected) {
             const font = loadSync(`${tempDir}${SEP}${expectation.family}.ttf`);
             const icon = findIconByName(IconYAML, expectation.icon);
             const glyphIndex = icon
@@ -75,31 +55,81 @@ describe("fontawesomeSubset", () => {
                 expect(secondaryGlyphIndex).toBeGreaterThan(0);
             }
         }
-    });
+    };
 
-    it("should create ttf, woff, and woff2 files for each requested subset", async () => {
-        const tempDir = await createTempDir();
-        await fontawesomeSubset(
+    itPro("should add all requested glyphs for valid icons", async () => {
+        // 6 + 1 extra since duotone has two
+        expect.assertions(6);
+
+        await testShouldAllAllRequiredGlyphs(
             {
                 solid: ["plus"],
                 regular: ["bell"],
                 brands: ["android"],
-                light: ["acorn"],
-                thin: ["album"],
-                duotone: ["abacus"],
+                duotone: ["bells"],
+                light: ["plus"],
             },
-            tempDir,
-            { package: "pro", targetFormats: ["woff2", "woff", "sfnt"] }
+            [
+                { family: "fa-solid-900", icon: "plus" },
+                { family: "fa-regular-400", icon: "bell" },
+                { family: "fa-brands-400", icon: "android" },
+                { family: "fa-duotone-900", duotone: true, icon: "bells" },
+                { family: "fa-light-300", icon: "plus" },
+            ]
         );
+    });
 
-        const fontNames = [
-            "fa-solid-900",
-            "fa-regular-400",
-            "fa-brands-400",
-            "fa-duotone-900",
-            "fa-thin-100",
-            "fa-light-300",
-        ]
+    itFree("should add all requested glyphs for valid icons", async () => {
+        expect.assertions(2);
+
+        await testShouldAllAllRequiredGlyphs(
+            {
+                solid: ["plus"],
+                regular: ["bell"],
+            },
+            [
+                { family: "fa-solid-900", icon: "plus" },
+                { family: "fa-regular-400", icon: "bell" },
+            ]
+        );
+    });
+
+    itGTE("6.0.0", "pro")(
+        "should add requested glyphs for the thin font on supported versions",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    thin: ["plus"],
+                },
+                [{ family: "fa-thin-100", icon: "plus" }]
+            );
+        }
+    );
+
+    itGTE("6.2.0", "pro")("should add requested glyphs for new font styles", async () => {
+        expect.assertions(1);
+
+        await testShouldAllAllRequiredGlyphs(
+            {
+                "sharp-solid": ["star"],
+            },
+            [{ family: "fa-sharp-solid-900", icon: "star" }]
+        );
+    });
+
+    const testShouldCreateRequestedFontFiles = async (
+        subsets: SubsetOption,
+        expectedFonts: string[]
+    ) => {
+        const tempDir = await createTempDir();
+        await fontawesomeSubset(subsets, tempDir, {
+            package: PACKAGE,
+            targetFormats: ["woff2", "woff", "sfnt"],
+        });
+
+        const fontNames = expectedFonts
             .map((name) => [`${name}.ttf`, `${name}.woff`, `${name}.woff2`])
             .flat();
         const fontPromises = fontNames.map((name) => fs.promises.access(`${tempDir}${SEP}${name}`));
@@ -107,7 +137,42 @@ describe("fontawesomeSubset", () => {
             .then(() => true)
             .catch((err) => console.log(err));
         expect(wasSuccessful).toBeTruthy();
+    };
+
+    itPro("should create ttf, woff, and woff2 files for each requested subset", async () => {
+        await testShouldCreateRequestedFontFiles(
+            {
+                solid: ["plus"],
+                regular: ["bell"],
+                brands: ["android"],
+                light: ["acorn"],
+                duotone: ["abacus"],
+            },
+            ["fa-solid-900", "fa-regular-400", "fa-brands-400", "fa-duotone-900", "fa-light-300"]
+        );
     });
+
+    itFree("should create ttf, woff, and woff2 files for each requested subset", async () => {
+        await testShouldCreateRequestedFontFiles(
+            {
+                solid: ["plus"],
+                regular: ["bell"],
+            },
+            ["fa-solid-900", "fa-regular-400"]
+        );
+    });
+
+    itGTE("6.0.0", "pro")(
+        "should create ttf, woff, and woff2 files for the thin font on supported versions",
+        async () => {
+            await testShouldCreateRequestedFontFiles(
+                {
+                    thin: ["album"],
+                },
+                ["fa-thin-100"]
+            );
+        }
+    );
 
     it("should not create font files for empty icon arrays", async () => {
         const tempDir = await createTempDir();

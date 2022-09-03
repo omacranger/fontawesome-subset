@@ -5,16 +5,19 @@
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
 import { sync as makeDirSync } from "mkdirp";
-import { FontAwesomeOptions, IconYAML, Subset, SubsetOption, TargetFormat } from "./types";
+import {
+    FAFamilyMetaType,
+    FAIconType,
+    FontAwesomeOptions,
+    IconFamilyYAML,
+    IconYAML,
+    Subset,
+    SubsetOption,
+} from "./types";
 import subsetFont from "subset-font";
 import yaml from "yaml";
-import { addIconError, findIconByName } from "./utils";
-
-const OUTPUT_FORMAT_MAP: Record<TargetFormat, string> = {
-    sfnt: "ttf",
-    woff: "woff",
-    woff2: "woff2",
-};
+import { addIconError, findIconByName, iconHasStyle } from "./utils";
+import { OUTPUT_FORMAT_MAP, STYLE_FONT_MAP } from "./constants";
 
 /**
  * This function will take an object of glyph names and output a subset of the standard fonts optimized in size for
@@ -31,15 +34,7 @@ function fontawesomeSubset(
 ) {
     const { package: packageType = "free", targetFormats = ["woff2", "sfnt"] } = options;
     // Maps style to actual font name / file name.
-    const fontMap: Record<Subset, string> = {
-        solid: "fa-solid-900",
-        light: "fa-light-300",
-        regular: "fa-regular-400",
-        thin: "fa-thin-100",
-        brands: "fa-brands-400",
-        duotone: "fa-duotone-900",
-    };
-    const fontTypes = Object.keys(fontMap);
+    const fontTypes = Object.keys(STYLE_FONT_MAP);
     let packageLocation: string;
 
     // Check to see if the user has either free, or pro installed.
@@ -60,6 +55,7 @@ function fontawesomeSubset(
     }
 
     const fontMeta = resolve(packageLocation, "../../metadata/icons.yml");
+    const fontFamilyMeta = resolve(packageLocation, "../../metadata/icon-families.yml");
     const fontFiles = resolve(packageLocation, "../../webfonts");
 
     // If 'subset' is set to array, turn into object defaulted for 'solid' use (fontawesome free)
@@ -67,7 +63,10 @@ function fontawesomeSubset(
         subset = { solid: subset };
     }
 
-    const iconMeta: IconYAML = yaml.parse(readFileSync(fontMeta, "utf8"));
+    const iconMeta = yaml.parse(readFileSync(fontMeta, "utf8")) as IconYAML;
+    const iconFamilyMeta = existsSync(fontFamilyMeta)
+        ? (yaml.parse(readFileSync(fontFamilyMeta, "utf8")) as IconFamilyYAML)
+        : null;
     const entries = Object.entries(subset);
 
     const promises: Promise<unknown>[] = [];
@@ -84,8 +83,8 @@ function fontawesomeSubset(
             continue;
         }
 
-        const fontFamily = key as keyof typeof fontMap;
-        const fontFileName = fontMap[fontFamily];
+        const fontFamily = key as keyof typeof STYLE_FONT_MAP;
+        const fontFileName = STYLE_FONT_MAP[fontFamily];
         const fontFilePath = resolve(fontFiles, `./${fontFileName}.ttf`);
 
         if (!existsSync(resolve(fontFilePath))) {
@@ -99,18 +98,32 @@ function fontawesomeSubset(
         // Pull unicode characters from fontawesome yml, aggregating into array
         const unicodeCharacters: string[] = [];
         for (const icon of icons) {
-            const foundIcon = findIconByName(iconMeta, icon);
+            let foundIcon: FAIconType | FAFamilyMetaType | undefined;
 
-            if (!foundIcon || !foundIcon.styles.includes(fontFamily)) {
-                addIconError(iconErrors, fontFamily, icon);
-            } else {
-                const charCode = foundIcon.unicode;
-                unicodeCharacters.push(String.fromCodePoint(parseInt(charCode, 16)));
+            if (iconFamilyMeta) {
+                foundIcon = findIconByName(iconFamilyMeta, icon);
 
-                // Duotone secondary char codes are prefixed with a `10` for the secondary color
-                if (fontFamily === "duotone") {
-                    unicodeCharacters.push(String.fromCodePoint(parseInt(`10${charCode}`, 16)));
+                // Skip if the icon isn't found in our icon yaml
+                if (!foundIcon || !iconHasStyle(foundIcon, fontFamily, packageType)) {
+                    addIconError(iconErrors, fontFamily, icon);
+                    continue;
                 }
+            } else {
+                foundIcon = findIconByName(iconMeta, icon);
+
+                // Skip if the icon isn't found in our icon yaml
+                if (!foundIcon || !foundIcon.styles.includes(fontFamily)) {
+                    addIconError(iconErrors, fontFamily, icon);
+                    continue;
+                }
+            }
+
+            const charCode = foundIcon.unicode;
+            unicodeCharacters.push(String.fromCodePoint(parseInt(charCode, 16)));
+
+            // Duotone secondary char codes are prefixed with a `10` for the secondary color
+            if (fontFamily === "duotone") {
+                unicodeCharacters.push(String.fromCodePoint(parseInt(`10${charCode}`, 16)));
             }
         }
 

@@ -1,6 +1,6 @@
 {
     "name": "fontawesome-subset",
-    "version": "4.2.0",
+    "version": "4.3.0",
     "description": "Utility to create subsets for FontAwesome and FontAwesome Pro.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -45,8 +45,8 @@
         "optimize"
     ],
     "peerDependencies": {
-        "@fortawesome/fontawesome-free": ">5.12.0",
-        "@fortawesome/fontawesome-pro": ">5.12.0"
+        "@fortawesome/fontawesome-free": ">=5.12.0",
+        "@fortawesome/fontawesome-pro": ">=5.12.0"
     },
     "peerDependenciesMeta": {
         "@fortawesome/fontawesome-free": {
@@ -57,8 +57,7 @@
         }
     },
     "devDependencies": {
-        "@fortawesome/fontawesome-free": "^6.1.1",
-        "@fortawesome/fontawesome-pro": "^6.1.1",
+        "@fortawesome/fontawesome-free": "^6.2.0",
         "@types/jest": "^28.1.4",
         "@types/mkdirp": "^1.0.2",
         "@types/node": "^16.9.1",
@@ -66,7 +65,8 @@
         "@types/subset-font": "^1.4.0",
         "@typescript-eslint/eslint-plugin": "^5.30.0",
         "@typescript-eslint/parser": "^5.30.0",
-        "eslint": "^8.18.0",
+        "compare-versions": "^5.0.1",
+        "eslint": "8.22.0",
         "husky": "^8.0.1",
         "jest": "^28.1.2",
         "opentype.js": "^1.3.4",
