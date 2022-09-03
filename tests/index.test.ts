@@ -59,7 +59,7 @@ describe("fontawesomeSubset", () => {
 
     itPro("should add all requested glyphs for valid icons", async () => {
         // 6 + 1 extra since duotone has two
-        expect.assertions(7);
+        expect.assertions(6);
 
         await testShouldAllAllRequiredGlyphs(
             {
@@ -68,14 +68,12 @@ describe("fontawesomeSubset", () => {
                 brands: ["android"],
                 duotone: ["bells"],
                 light: ["plus"],
-                thin: ["plus"],
             },
             [
                 { family: "fa-solid-900", icon: "plus" },
                 { family: "fa-regular-400", icon: "bell" },
                 { family: "fa-brands-400", icon: "android" },
                 { family: "fa-duotone-900", duotone: true, icon: "bells" },
-                { family: "fa-thin-100", icon: "plus" },
                 { family: "fa-light-300", icon: "plus" },
             ]
         );
@@ -95,6 +93,20 @@ describe("fontawesomeSubset", () => {
             ]
         );
     });
+
+    itGTE("6.0.0", "pro")(
+        "should add requested glyphs for the thin font on supported versions",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    thin: ["plus"],
+                },
+                [{ family: "fa-thin-100", icon: "plus" }]
+            );
+        }
+    );
 
     itGTE("6.2.0", "pro")("should add requested glyphs for new font styles", async () => {
         expect.assertions(1);
@@ -134,17 +146,9 @@ describe("fontawesomeSubset", () => {
                 regular: ["bell"],
                 brands: ["android"],
                 light: ["acorn"],
-                thin: ["album"],
                 duotone: ["abacus"],
             },
-            [
-                "fa-solid-900",
-                "fa-regular-400",
-                "fa-brands-400",
-                "fa-duotone-900",
-                "fa-thin-100",
-                "fa-light-300",
-            ]
+            ["fa-solid-900", "fa-regular-400", "fa-brands-400", "fa-duotone-900", "fa-light-300"]
         );
     });
 
@@ -157,6 +161,18 @@ describe("fontawesomeSubset", () => {
             ["fa-solid-900", "fa-regular-400"]
         );
     });
+
+    itGTE("6.0.0", "pro")(
+        "should create ttf, woff, and woff2 files for the thin font on supported versions",
+        async () => {
+            await testShouldCreateRequestedFontFiles(
+                {
+                    thin: ["album"],
+                },
+                ["fa-thin-100"]
+            );
+        }
+    );
 
     it("should not create font files for empty icon arrays", async () => {
         const tempDir = await createTempDir();
