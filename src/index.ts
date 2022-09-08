@@ -42,12 +42,12 @@ function fontawesomeSubset(
         packageLocation = require.resolve(`@fortawesome/fontawesome-${packageType}`);
     } catch (e) {
         console.error(
-            "Unable to find either the Free or Pro FontAwesome files in node_modules folder. Double-check that you have your preferred fontawesome package as a dependency in `package.json` and rerun the installation."
+            `Unable to resolve the module '@fortawesome/fontawesome-${packageType}'. Double-check that you have your preferred fontawesome package installed as a dependency and the package type passed into the options if using Pro features.\n\n\`fontawesomeSubset(..., ..., { package: 'pro' })\``
         );
         return Promise.resolve(false);
     }
 
-    // Check that we have atleast one target format for output
+    // Check that we have at least one target format for output
     if (!Array.isArray(targetFormats) || targetFormats.length === 0) {
         console.error("One or more target formats are required. Exiting.");
 
