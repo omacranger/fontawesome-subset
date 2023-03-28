@@ -11,7 +11,16 @@ export interface FontAwesomeOptions {
 
 export type PackageType = "free" | "pro";
 
-export type Subset = "solid" | "light" | "regular" | "thin" | "brands" | "duotone" | "sharp-solid";
+export type Subset =
+    | "solid"
+    | "light"
+    | "regular"
+    | "thin"
+    | "brands"
+    | "duotone"
+    | "sharp-solid"
+    | "sharp-regular"
+    | "sharp-light";
 
 export type GlyphName = string;
 

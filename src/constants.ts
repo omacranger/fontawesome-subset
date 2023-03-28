@@ -8,6 +8,8 @@ export const STYLE_FONT_MAP: Record<Subset, string> = {
     thin: "fa-thin-100",
     brands: "fa-brands-400",
     duotone: "fa-duotone-900",
+    "sharp-light": "fa-sharp-light-300",
+    "sharp-regular": "fa-sharp-regular-400",
     "sharp-solid": "fa-sharp-solid-900",
 };
 
@@ -18,6 +20,8 @@ export const OUTPUT_FORMAT_MAP: Record<TargetFormat, string> = {
 };
 
 export const SUBSET_FAMILY_MAP: Record<Subset, FAFamilyType> = {
+    "sharp-light": "sharp",
+    "sharp-regular": "sharp",
     "sharp-solid": "sharp",
     brands: "classic",
     duotone: "duotone",
@@ -28,6 +32,8 @@ export const SUBSET_FAMILY_MAP: Record<Subset, FAFamilyType> = {
 };
 
 export const SUBSET_STYLE_MAP: Record<Subset, FAStyleType> = {
+    "sharp-light": "light",
+    "sharp-regular": "regular",
     "sharp-solid": "solid",
     brands: "brands",
     duotone: "solid",
