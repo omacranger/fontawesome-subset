@@ -65,7 +65,7 @@ fontawesomeSubset(
 );
 ```
 
-You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, `duotone`, or `sharp-solid`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
+You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, `duotone`, `sharp-light`, `sharp-regular`, or `sharp-solid`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
 
 The above example would output a directory with the following structure:
 

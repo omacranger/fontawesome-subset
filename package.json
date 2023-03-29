@@ -1,6 +1,6 @@
 {
     "name": "fontawesome-subset",
-    "version": "4.3.1",
+    "version": "4.4.0",
     "description": "Utility to create subsets for FontAwesome and FontAwesome Pro.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
