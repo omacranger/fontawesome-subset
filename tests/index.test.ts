@@ -108,16 +108,47 @@ describe("fontawesomeSubset", () => {
         }
     );
 
-    itGTE("6.2.0", "pro")("should add requested glyphs for new font styles", async () => {
-        expect.assertions(1);
+    itGTE("6.2.0", "pro")(
+        "should add requested glyphs for new font styles in sharp-solid",
+        async () => {
+            expect.assertions(1);
 
-        await testShouldAllAllRequiredGlyphs(
-            {
-                "sharp-solid": ["star"],
-            },
-            [{ family: "fa-sharp-solid-900", icon: "star" }]
-        );
-    });
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "sharp-solid": ["star"],
+                },
+                [{ family: "fa-sharp-solid-900", icon: "star" }]
+            );
+        }
+    );
+
+    itGTE("6.3.0", "pro")(
+        "should add requested glyphs for new font styles in sharp-regular",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "sharp-regular": ["star"],
+                },
+                [{ family: "fa-sharp-regular-400", icon: "star" }]
+            );
+        }
+    );
+
+    itGTE("6.4.0", "pro")(
+        "should add requested glyphs for new font styles in sharp-light",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "sharp-light": ["star"],
+                },
+                [{ family: "fa-sharp-light-300", icon: "star" }]
+            );
+        }
+    );
 
     const testShouldCreateRequestedFontFiles = async (
         subsets: SubsetOption,

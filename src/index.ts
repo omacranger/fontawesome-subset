@@ -4,7 +4,7 @@
 
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import { resolve } from "path";
-import { sync as makeDirSync } from "mkdirp";
+import { mkdirp } from "mkdirp";
 import {
     FAFamilyMetaType,
     FAIconType,
@@ -127,7 +127,7 @@ function fontawesomeSubset(
             }
         }
 
-        makeDirSync(resolve(outputDir));
+        mkdirp.sync(resolve(outputDir));
         const fontData = readFileSync(fontFilePath);
         const outputFile = resolve(outputDir, fontFileName);
 
