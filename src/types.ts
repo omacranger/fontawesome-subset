@@ -4,6 +4,10 @@ export interface FontAwesomeOptions {
      */
     package?: PackageType;
     /**
+     * Override the path we use to search for a valid FontAwesome package. Useful for npm aliases.
+     */
+    packagePath?: string;
+    /**
      * Requested font output targets.
      */
     targetFormats?: TargetFormat[];
