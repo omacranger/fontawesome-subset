@@ -20,7 +20,15 @@ export type Subset =
     | "duotone"
     | "sharp-solid"
     | "sharp-regular"
-    | "sharp-light";
+    | "sharp-light"
+    | "sharp-thin"
+    | "duotone-light"
+    | "duotone-regular"
+    | "duotone-thin"
+    | "sharp-duotone-light"
+    | "sharp-duotone-regular"
+    | "sharp-duotone-solid"
+    | "sharp-duotone-thin";
 
 export type GlyphName = string;
 
@@ -57,7 +65,7 @@ export interface FAIconType {
     };
 }
 
-export type FAFamilyType = "classic" | "duotone" | "sharp";
+export type FAFamilyType = "classic" | "duotone" | "sharp" | "sharp-duotone";
 export type FAStyleType = "solid" | "thin" | "light" | "regular" | "brands";
 
 /**
