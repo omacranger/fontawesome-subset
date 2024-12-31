@@ -150,6 +150,60 @@ describe("fontawesomeSubset", () => {
         }
     );
 
+    itGTE("6.5.0", "pro")(
+        "should add requested glyphs for new font styles in sharp-thin",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "sharp-thin": ["star"],
+                },
+                [{ family: "fa-sharp-thin-100", icon: "star" }]
+            );
+        }
+    );
+
+    itGTE("6.6.0", "pro")(
+        "should add requested glyphs for new font styles in sharp-duotone-solid",
+        async () => {
+            expect.assertions(1);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "sharp-duotone-solid": ["star"],
+                },
+                [{ family: "fa-sharp-duotone-solid-900", icon: "star" }]
+            );
+        }
+    );
+
+    itGTE("6.7.0", "pro")(
+        "should add requested glyphs for new font styles in duotone-(regular|light|thin) and sharp-duotone-(regular|light|thin)",
+        async () => {
+            expect.assertions(6);
+
+            await testShouldAllAllRequiredGlyphs(
+                {
+                    "duotone-regular": ["star"],
+                    "duotone-light": ["star"],
+                    "duotone-thin": ["star"],
+                    "sharp-duotone-regular": ["star"],
+                    "sharp-duotone-light": ["star"],
+                    "sharp-duotone-thin": ["star"],
+                },
+                [
+                    { family: "fa-duotone-regular-400", icon: "star" },
+                    { family: "fa-duotone-light-300", icon: "star" },
+                    { family: "fa-duotone-thin-100", icon: "star" },
+                    { family: "fa-sharp-duotone-regular-400", icon: "star" },
+                    { family: "fa-sharp-duotone-light-300", icon: "star" },
+                    { family: "fa-sharp-duotone-thin-100", icon: "star" },
+                ]
+            );
+        }
+    );
+
     const testShouldCreateRequestedFontFiles = async (
         subsets: SubsetOption,
         expectedFonts: string[]
