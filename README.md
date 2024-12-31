@@ -65,7 +65,7 @@ fontawesomeSubset(
 );
 ```
 
-You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, `duotone`, `sharp-light`, `sharp-regular`, or `sharp-solid`. You can mix and match and provide as many glyphs as you plan on using to trim it down.
+You can use any of the weights / sets provided by FontAwesome Pro including `solid`, `regular`, `light`, `brands`, `duotone`, `sharp-*` and `sharp-duotone-*`. You can mix and match and provide as many glyphs as you plan on using to trim it down. See the full list of supported subsets in [`types.ts`](https://github.com/omacranger/fontawesome-subset/blob/master/src/types.ts#L14).
 
 The above example would output a directory with the following structure:
 
