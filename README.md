@@ -36,6 +36,7 @@ fontawesomeSubset(["check", "square", "caret-up"], "sass/webfonts");
 -   `output_dir` - Directory that you want the webfonts to be generated in. Relative to current NPM process. Ex: `sass/webfonts`
 -   `options` - Object of options to further customize the tool.
     -   `package` - `free` or `pro` . Defaults to `free` version. See [below](#using-with-fontawesome-pro) for Pro instructions.
+    -   `packagePath` - `string` . Defaults to the default package names from the fontawesome registry. Can be used with an NPM alias to customize the path of the FontAwesome package to use. Ex: `fa-pro-6` combined with `npm install fa-pro-6@npm:@fortawesome/fontawesome-pro@^6.0.0`
     -   `targetFormats` - A string array of one or more formats to export. Available options: `woff` `woff2` `sfnt` (`ttf`). Defaults to `woff2` & `sfnt`.
 
 ### Using with FontAwesome Pro
