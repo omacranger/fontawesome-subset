@@ -85,7 +85,7 @@ function fontawesomeSubset(
 
         const fontFamily = key as keyof typeof STYLE_FONT_MAP;
         const fontFileName = STYLE_FONT_MAP[fontFamily];
-        const fontFilePath = resolve(fontFiles, `./${fontFileName}.ttf`);
+        const fontFilePath = resolve(fontFiles, `./${fontFileName}.woff2`);
 
         if (!existsSync(resolve(fontFilePath))) {
             console.warn(
