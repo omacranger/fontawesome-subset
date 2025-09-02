@@ -21,6 +21,10 @@ describe("fontawesomeSubset", () => {
         subsetMock.mockImplementation(jest.fn(() => Promise.resolve(Buffer.from(""))));
     });
 
+    afterEach(() => {
+        jest.resetAllMocks();
+    });
+
     const testShouldAllAllRequiredGlyphs = async (
         subsets: SubsetOption,
         expected: { family: string; icon: string; duotone?: boolean }[]
@@ -285,8 +289,6 @@ describe("fontawesomeSubset", () => {
         expect(response).toBeFalsy();
         expect(warnSpy).toBeCalledTimes(2);
         expect(tableSpy).toBeCalledTimes(1);
-
-        jest.resetAllMocks();
     });
 
     it("should warn when a font file is not found for a requested subset", async () => {
@@ -305,6 +307,28 @@ describe("fontawesomeSubset", () => {
         const response = await fontawesomeSubset(["arrow-left"], "", { targetFormats: [] });
 
         expect(errorSpy).toBeCalledWith("One or more target formats are required. Exiting.");
+        expect(response).toBeFalsy();
+    });
+
+    it("should allow customizing the package resolve path with options.packagePath", async () => {
+        const errorSpy = jest.spyOn(console, "error").mockImplementationOnce(() => false);
+        const response = await fontawesomeSubset(["arrow-left"], "", {
+            packagePath: `@fortawesome/fontawesome-${PACKAGE}`,
+        });
+
+        expect(errorSpy).not.toBeCalled();
+        expect(response).toBeTruthy();
+    });
+
+    it("should error when an invalid packagePath is provided", async () => {
+        const errorSpy = jest.spyOn(console, "error").mockImplementationOnce(() => false);
+        const response = await fontawesomeSubset(["arrow-left"], "", {
+            packagePath: "some-other-name",
+        });
+
+        expect(errorSpy).toBeCalledWith(
+            expect.stringContaining("Unable to resolve the module 'some-other-name'.")
+        );
         expect(response).toBeFalsy();
     });
 });

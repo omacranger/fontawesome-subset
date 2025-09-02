@@ -32,17 +32,23 @@ function fontawesomeSubset(
     outputDir: string,
     options: FontAwesomeOptions = {}
 ) {
-    const { package: packageType = "free", targetFormats = ["woff2", "sfnt"] } = options;
+    const {
+        package: packageType = "free",
+        targetFormats = ["woff2", "sfnt"],
+        packagePath,
+    } = options;
     // Maps style to actual font name / file name.
     const fontTypes = Object.keys(STYLE_FONT_MAP);
     let packageLocation: string;
 
     // Check to see if the user has either free, or pro installed.
     try {
-        packageLocation = require.resolve(`@fortawesome/fontawesome-${packageType}`);
+        packageLocation = require.resolve(packagePath ?? `@fortawesome/fontawesome-${packageType}`);
     } catch (e) {
         console.error(
-            `Unable to resolve the module '@fortawesome/fontawesome-${packageType}'. Double-check that you have your preferred fontawesome package installed as a dependency and the package type passed into the options if using Pro features.\n\n\`fontawesomeSubset(..., ..., { package: 'pro' })\``
+            `Unable to resolve the module '${
+                packagePath ?? `@fortawesome/fontawesome-${packageType}`
+            }'. Double-check that you have your preferred fontawesome package installed as a dependency and the package type passed into the options if using Pro features.\n\n\`fontawesomeSubset(..., ..., { package: 'pro' })\``
         );
         return Promise.resolve(false);
     }
